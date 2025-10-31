@@ -1,107 +1,56 @@
-body {
-  font-family: "Tajawal", sans-serif;
-  background: linear-gradient(135deg, #7dd3fc, #1d4ed8);
-  color: #fff;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  min-height: 100vh;
-}
+// عناصر واجهة المستخدم
+const loginScreen = document.getElementById("login-screen");
+const gameScreen = document.getElementById("game-screen");
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+const loginBtn = document.getElementById("login-btn");
+const registerBtn = document.getElementById("register-btn");
+const showRegisterBtn = document.getElementById("show-register-btn");
+const showLoginBtn = document.getElementById("show-login-btn");
 
-/* واجهة تسجيل الدخول */
-#login-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+// تنقل بين التسجيل والدخول
+showRegisterBtn.onclick = () => {
+  loginForm.style.display = "none";
+  registerForm.style.display = "block";
+};
 
-#login-form, #register-form {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 25px 35px;
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  width: 320px;
-  max-width: 90%;
-}
+showLoginBtn.onclick = () => {
+  registerForm.style.display = "none";
+  loginForm.style.display = "block";
+};
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  text-align: center;
-  font-size: 15px;
-}
+// عملية تسجيل الدخول
+loginBtn.onclick = () => {
+  const username = document.getElementById("login-username").value;
+  const password = document.getElementById("login-password").value;
+  const msg = document.getElementById("login-message");
 
-button {
-  width: 100%;
-  padding: 10px;
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 5px;
-  transition: background 0.3s ease;
-}
+  if (username === "player" && password === "1234") {
+    loginScreen.style.display = "none";
+    gameScreen.style.display = "block";
+    document.getElementById("player-name").textContent = username;
+  } else {
+    msg.textContent = "❌ اسم المستخدم أو كلمة المرور غير صحيحة";
+    loginForm.classList.add("shake");
+    setTimeout(() => loginForm.classList.remove("shake"), 400);
+  }
+};
 
-button:hover {
-  background: #1e40af;
-}
+// تسجيل الحساب (تجريبي)
+registerBtn.onclick = () => {
+  const msg = document.getElementById("register-message");
+  msg.textContent = "✅ تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن.";
+  registerForm.classList.add("shake");
+  setTimeout(() => registerForm.classList.remove("shake"), 400);
+};
 
-#game-screen {
-  display: none;
-  padding: 20px;
-}
-
-#player-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(0,0,0,0.3);
-  padding: 10px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-
-#leaderboard {
-  background: rgba(0,0,0,0.2);
-  padding: 10px;
-  border-radius: 12px;
-  max-width: 500px;
-  margin: 10px auto;
-}
-
-.section {
-  background: rgba(0,0,0,0.2);
-  margin: 15px auto;
-  padding: 15px;
-  border-radius: 15px;
-  max-width: 500px;
-  text-align: center;
-}
-
-.progress-bar {
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-  overflow: hidden;
-  height: 22px;
-  margin: 10px 0;
-}
-
-.progress-fill {
-  background: #22c55e;
-  height: 100%;
-  width: 0%;
-  color: #fff;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: width 0.4s ease;
-}
+// زر التقدم
+document.getElementById("progress-btn").onclick = () => {
+  const bar = document.getElementById("progress-fill");
+  let width = parseInt(bar.style.width) || 0;
+  if (width < 100) {
+    width += 10;
+    bar.style.width = width + "%";
+    bar.textContent = width + "%";
+  }
+};
