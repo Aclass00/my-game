@@ -23,88 +23,103 @@ const MINE_TIME = 300;
 const GOLD_TIME = 60;
 let gameInterval = null;
 
-// 🧩 إنشاء لاعب جديد
-window.register = function() {
-  const username = document.getElementById('new-username').value.trim();
-  const password = document.getElementById('new-password').value;
-  const msg = document.getElementById('register-message');
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ الصفحة جاهزة والسكربت تم تحميله بنجاح");
 
-  if (!username || !password) {
-    msg.innerHTML = "❌ الرجاء إدخال جميع الحقول";
-    return;
-  }
+  // 🧩 إنشاء لاعب جديد
+  window.register = function() {
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value;
+    const msg = document.getElementById('register-message');
 
-  const playerRef = ref(db, 'players/' + username);
-  get(playerRef).then(snapshot => {
-    if (snapshot.exists()) {
-      msg.innerHTML = "❌ هذا الاسم مستخدم مسبقًا";
-    } else {
-      const newPlayer = {
-        password: password,
-        playerData: {
-          name: username,
-          gold: 100,
-          food: 0,
-          iron: 0,
-          crops: 0,
-          minedIron: 0,
-          farmLevel: 1,
-          mineLevel: 1,
-          goldLevel: 1,
-          score: 0,
-          farmTimer: FARM_TIME,
-          mineTimer: MINE_TIME,
-          goldTimer: GOLD_TIME,
-          joinDate: new Date().toISOString(),
-          lastLogin: new Date().toISOString()
-        }
-      };
-      set(playerRef, newPlayer);
-      msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
-      setTimeout(() => window.showLogin(), 2000);
+    if (!username || !password) {
+      msg.innerHTML = "❌ الرجاء إدخال جميع الحقول";
+      return;
     }
-  });
-};
 
-// 🔑 تسجيل الدخول
-window.login = function() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-  const msg = document.getElementById('login-message');
-
-  const playerRef = ref(db, 'players/' + username);
-  get(playerRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const player = snapshot.val();
-      if (player.password === password) {
-        currentPlayer = player.playerData;
-        currentPlayer.lastLogin = new Date().toISOString();
-
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'block';
-        document.getElementById('current-player').textContent = currentPlayer.name;
-
-        startGameLoop();
-        updateUI();
+    const playerRef = ref(db, 'players/' + username);
+    get(playerRef).then(snapshot => {
+      if (snapshot.exists()) {
+        msg.innerHTML = "❌ هذا الاسم مستخدم مسبقًا";
       } else {
-        msg.innerHTML = "❌ كلمة المرور غير صحيحة";
+        const newPlayer = {
+          password: password,
+          playerData: {
+            name: username,
+            gold: 100,
+            food: 0,
+            iron: 0,
+            crops: 0,
+            minedIron: 0,
+            farmLevel: 1,
+            mineLevel: 1,
+            goldLevel: 1,
+            score: 0,
+            farmTimer: FARM_TIME,
+            mineTimer: MINE_TIME,
+            goldTimer: GOLD_TIME,
+            joinDate: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          }
+        };
+        set(playerRef, newPlayer);
+        msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
+        setTimeout(() => window.showLogin(), 2000);
       }
-    } else {
-      msg.innerHTML = "❌ اسم المستخدم غير موجود";
-    }
-  });
-};
+    });
+  };
 
-// 🚪 تسجيل الخروج
-window.logout = function() {
-  stopGameLoop();
-  currentPlayer = null;
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  window.showLogin();
-};
+  // 🔑 تسجيل الدخول
+  window.login = function() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const msg = document.getElementById('login-message');
 
-// 💾 حفظ بيانات اللاعب
+    const playerRef = ref(db, 'players/' + username);
+    get(playerRef).then(snapshot => {
+      if (snapshot.exists()) {
+        const player = snapshot.val();
+        if (player.password === password) {
+          currentPlayer = player.playerData;
+          currentPlayer.lastLogin = new Date().toISOString();
+
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('game-screen').style.display = 'block';
+          document.getElementById('current-player').textContent = currentPlayer.name;
+
+          startGameLoop();
+          updateUI();
+        } else {
+          msg.innerHTML = "❌ كلمة المرور غير صحيحة";
+        }
+      } else {
+        msg.innerHTML = "❌ اسم المستخدم غير موجود";
+      }
+    });
+  };
+
+  // 🚪 تسجيل الخروج
+  window.logout = function() {
+    stopGameLoop();
+    currentPlayer = null;
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    window.showLogin();
+  };
+
+  // 📱 عرض النماذج
+  window.showRegister = function() {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('register-form').style.display = 'block';
+  };
+
+  window.showLogin = function() {
+    document.getElementById('register-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'block';
+  };
+});
+
+// ===== الدوال المساعدة =====
 function savePlayerData() {
   if (!currentPlayer) return;
   const updates = {};
@@ -112,7 +127,6 @@ function savePlayerData() {
   update(ref(db), updates);
 }
 
-// 🏆 تحديث لوحة المتصدرين
 function listenToLeaderboard() {
   const playersRef = ref(db, 'players');
   onValue(playersRef, snapshot => {
@@ -134,7 +148,6 @@ function listenToLeaderboard() {
   });
 }
 
-// ⏱️ حلقة اللعبة
 function startGameLoop() {
   listenToLeaderboard();
   if (gameInterval) clearInterval(gameInterval);
@@ -176,7 +189,6 @@ function stopGameLoop() {
   if (gameInterval) clearInterval(gameInterval);
 }
 
-// 🎨 تحديث واجهة المستخدم
 function updateUI() {
   if (!currentPlayer) return;
   document.getElementById('gold').textContent = currentPlayer.gold;
@@ -186,14 +198,3 @@ function updateUI() {
   document.getElementById('mine-level').textContent = currentPlayer.mineLevel;
   document.getElementById('score').textContent = currentPlayer.score;
 }
-
-// 📱 عرض النماذج
-window.showRegister = function() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('register-form').style.display = 'block';
-};
-
-window.showLogin = function() {
-  document.getElementById('register-form').style.display = 'none';
-  document.getElementById('login-form').style.display = 'block';
-};
