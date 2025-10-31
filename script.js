@@ -17,7 +17,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// --------------------------------
 let currentPlayer = null;
 const FARM_TIME = 300;
 const MINE_TIME = 300;
@@ -62,7 +61,7 @@ window.register = function() {
       };
       set(playerRef, newPlayer);
       msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
-      setTimeout(showLogin, 2000);
+      setTimeout(() => window.showLogin(), 2000);
     }
   });
 };
@@ -102,7 +101,7 @@ window.logout = function() {
   currentPlayer = null;
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  showLogin();
+  window.showLogin();
 };
 
 // 💾 حفظ بيانات اللاعب
