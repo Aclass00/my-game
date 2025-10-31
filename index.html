@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة المزرعة والمصنع</title>
+    <title>🌾 لعبة المزرعة والمصنع</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +16,6 @@
             <button onclick="showRegister()">إنشاء حساب جديد</button>
             <div id="login-message"></div>
         </div>
-
         <div id="register-form" style="display:none;">
             <h2>📝 إنشاء حساب جديد</h2>
             <input type="text" id="new-username" placeholder="اسم اللاعب الجديد">
@@ -26,7 +25,7 @@
             <div id="register-message"></div>
         </div>
     </div>
-
+    
     <div id="game-screen" style="display:none;">
         <div id="player-info">
             <span>مرحباً, <span id="current-player">...</span></span>
@@ -37,7 +36,7 @@
             <h2>🏆 لوحة المتصدرين</h2>
             <div id="players-list"></div>
         </div>
-
+        
         <div id="resources">
             <h3>💰 مواردك</h3>
             <div>ذهب: <span id="gold">100</span></div>
@@ -46,7 +45,7 @@
             <div>المستوى: <span id="level">1</span></div>
             <div>النقاط: <span id="score">0</span></div>
         </div>
-
+        
         <div id="actions">
             <div class="section">
                 <h3>🌱 المزرعة (المستوى <span id="farm-level">1</span>)</h3>
@@ -59,24 +58,24 @@
                 </div>
                 <button onclick="upgradeFarm()">تطوير المزرعة (تكلفة: <span id="farm-cost">50</span> ذهب)</button>
             </div>
-
+            
             <div class="section">
                 <h3>⛏️ المنجم (المستوى <span id="mine-level">1</span>)</h3>
                 <div>إنتاج: <span id="mine-production">8</span> حديد كل 5 دقائق</div>
                 <div>إجمالي الحديد المستخرج: <span id="mined-iron">0</span></div>
                 <div class="progress-bar">
-                    <div class="progress-fill" id="mine-progress" style="width: 0%">
+                    <div class="progress-fill mine" id="mine-progress" style="width: 0%">
                         <span id="mine-timer">5:00</span>
                     </div>
                 </div>
                 <button onclick="upgradeMine()">تطوير المنجم (تكلفة: <span id="mine-cost">50</span> ذهب)</button>
             </div>
-
+            
             <div class="section">
                 <h3>💎 دخل الذهب التلقائي</h3>
                 <div>الدخل التلقائي: <span id="auto-income">5</span> ذهب/دقيقة</div>
                 <div class="progress-bar">
-                    <div class="progress-fill" id="gold-progress" style="width: 0%">
+                    <div class="progress-fill gold" id="gold-progress" style="width: 0%">
                         <span id="gold-timer">1:00</span>
                     </div>
                 </div>
@@ -84,7 +83,8 @@
             </div>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    
+    <!-- ربط ملف الجافا -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
