@@ -1,6 +1,7 @@
 // -------- إعداد Firebase --------
-//import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-//import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getDatabase, ref, set, get, child, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
 
 // ← ضع بيانات Firebase هنا
 const firebaseConfig = {
