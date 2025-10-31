@@ -1,56 +1,126 @@
-// عناصر واجهة المستخدم
-const loginScreen = document.getElementById("login-screen");
-const gameScreen = document.getElementById("game-screen");
-const loginForm = document.getElementById("login-form");
-const registerForm = document.getElementById("register-form");
-const loginBtn = document.getElementById("login-btn");
-const registerBtn = document.getElementById("register-btn");
-const showRegisterBtn = document.getElementById("show-register-btn");
-const showLoginBtn = document.getElementById("show-login-btn");
+// Firebase إعداد
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// تنقل بين التسجيل والدخول
-showRegisterBtn.onclick = () => {
-  loginForm.style.display = "none";
-  registerForm.style.display = "block";
+const firebaseConfig = {
+  apiKey: "AIzaSyCIngK0rjuc0afE5rDjNHzV7ALmBj0CY78",
+  authDomain: "farm-ecb9f.firebaseapp.com",
+  databaseURL: "https://farm-ecb9f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "farm-ecb9f",
+  storageBucket: "farm-ecb9f.firebasestorage.app",
+  messagingSenderId: "500210794931",
+  appId: "1:500210794931:web:43466af6701d0f69844bc6",
+  measurementId: "G-2B17MMQRYK"
 };
 
-showLoginBtn.onclick = () => {
-  registerForm.style.display = "none";
-  loginForm.style.display = "block";
-};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// عملية تسجيل الدخول
-loginBtn.onclick = () => {
-  const username = document.getElementById("login-username").value;
-  const password = document.getElementById("login-password").value;
-  const msg = document.getElementById("login-message");
+let currentPlayer = null;
+const FARM_TIME = 300;
+const MINE_TIME = 300;
+const GOLD_TIME = 60;
+let gameInterval = null;
 
-  if (username === "player" && password === "1234") {
-    loginScreen.style.display = "none";
-    gameScreen.style.display = "block";
-    document.getElementById("player-name").textContent = username;
-  } else {
-    msg.textContent = "❌ اسم المستخدم أو كلمة المرور غير صحيحة";
-    loginForm.classList.add("shake");
-    setTimeout(() => loginForm.classList.remove("shake"), 400);
+// تسجيل الأحداث
+document.getElementById("login-btn").addEventListener("click", login);
+document.getElementById("register-btn").addEventListener("click", register);
+document.getElementById("show-register-btn").addEventListener("click", showRegister);
+document.getElementById("show-login-btn").addEventListener("click", showLogin);
+document.getElementById("logout-btn").addEventListener("click", logout);
+
+// إنشاء حساب جديد
+function register() {
+  const username = document.getElementById('new-username').value.trim();
+  const password = document.getElementById('new-password').value;
+  const msg = document.getElementById('register-message');
+
+  if (!username || !password) {
+    msg.innerHTML = "❌ الرجاء إدخال جميع الحقول";
+    return;
   }
-};
 
-// تسجيل الحساب (تجريبي)
-registerBtn.onclick = () => {
-  const msg = document.getElementById("register-message");
-  msg.textContent = "✅ تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن.";
-  registerForm.classList.add("shake");
-  setTimeout(() => registerForm.classList.remove("shake"), 400);
-};
+  const playerRef = ref(db, 'players/' + username);
+  get(playerRef).then(snapshot => {
+    if (snapshot.exists()) {
+      msg.innerHTML = "❌ هذا الاسم مستخدم مسبقًا";
+    } else {
+      const newPlayer = {
+        password: password,
+        playerData: {
+          name: username,
+          gold: 100,
+          food: 0,
+          iron: 0,
+          crops: 0,
+          minedIron: 0,
+          farmLevel: 1,
+          mineLevel: 1,
+          goldLevel: 1,
+          score: 0,
+          farmTimer: FARM_TIME,
+          mineTimer: MINE_TIME,
+          goldTimer: GOLD_TIME,
+          joinDate: new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        }
+      };
+      set(playerRef, newPlayer);
+      msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
+      setTimeout(showLogin, 2000);
+    }
+  });
+}
 
-// زر التقدم
-document.getElementById("progress-btn").onclick = () => {
-  const bar = document.getElementById("progress-fill");
-  let width = parseInt(bar.style.width) || 0;
-  if (width < 100) {
-    width += 10;
-    bar.style.width = width + "%";
-    bar.textContent = width + "%";
-  }
-};
+// تسجيل الدخول
+function login() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const msg = document.getElementById('login-message');
+
+  const playerRef = ref(db, 'players/' + username);
+  get(playerRef).then(snapshot => {
+    if (snapshot.exists()) {
+      const player = snapshot.val();
+      if (player.password === password) {
+        currentPlayer = player.playerData;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('current-player').textContent = currentPlayer.name;
+        startGameLoop();
+      } else {
+        msg.innerHTML = "❌ كلمة المرور غير صحيحة";
+      }
+    } else {
+      msg.innerHTML = "❌ اسم المستخدم غير موجود";
+    }
+  });
+}
+
+// عرض وإخفاء النماذج
+function showRegister() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('register-form').style.display = 'block';
+}
+
+function showLogin() {
+  document.getElementById('register-form').style.display = 'none';
+  document.getElementById('login-form').style.display = 'block';
+}
+
+function logout() {
+  currentPlayer = null;
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  showLogin();
+}
+
+function startGameLoop() {
+  if (gameInterval) clearInterval(gameInterval);
+  gameInterval = setInterval(() => {
+    if (!currentPlayer) return;
+    currentPlayer.gold += 1;
+    document.getElementById('gold').textContent = currentPlayer.gold;
+    update(ref(db, { ['players/' + currentPlayer.name + '/playerData']: currentPlayer }));
+  }, 1000);
+}
