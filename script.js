@@ -1,126 +1,107 @@
-// Firebase إعداد
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCIngK0rjuc0afE5rDjNHzV7ALmBj0CY78",
-  authDomain: "farm-ecb9f.firebaseapp.com",
-  databaseURL: "https://farm-ecb9f-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "farm-ecb9f",
-  storageBucket: "farm-ecb9f.firebasestorage.app",
-  messagingSenderId: "500210794931",
-  appId: "1:500210794931:web:43466af6701d0f69844bc6",
-  measurementId: "G-2B17MMQRYK"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-let currentPlayer = null;
-const FARM_TIME = 300;
-const MINE_TIME = 300;
-const GOLD_TIME = 60;
-let gameInterval = null;
-
-// تسجيل الأحداث
-document.getElementById("login-btn").addEventListener("click", login);
-document.getElementById("register-btn").addEventListener("click", register);
-document.getElementById("show-register-btn").addEventListener("click", showRegister);
-document.getElementById("show-login-btn").addEventListener("click", showLogin);
-document.getElementById("logout-btn").addEventListener("click", logout);
-
-// إنشاء حساب جديد
-function register() {
-  const username = document.getElementById('new-username').value.trim();
-  const password = document.getElementById('new-password').value;
-  const msg = document.getElementById('register-message');
-
-  if (!username || !password) {
-    msg.innerHTML = "❌ الرجاء إدخال جميع الحقول";
-    return;
-  }
-
-  const playerRef = ref(db, 'players/' + username);
-  get(playerRef).then(snapshot => {
-    if (snapshot.exists()) {
-      msg.innerHTML = "❌ هذا الاسم مستخدم مسبقًا";
-    } else {
-      const newPlayer = {
-        password: password,
-        playerData: {
-          name: username,
-          gold: 100,
-          food: 0,
-          iron: 0,
-          crops: 0,
-          minedIron: 0,
-          farmLevel: 1,
-          mineLevel: 1,
-          goldLevel: 1,
-          score: 0,
-          farmTimer: FARM_TIME,
-          mineTimer: MINE_TIME,
-          goldTimer: GOLD_TIME,
-          joinDate: new Date().toISOString(),
-          lastLogin: new Date().toISOString()
-        }
-      };
-      set(playerRef, newPlayer);
-      msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
-      setTimeout(showLogin, 2000);
-    }
-  });
+body {
+  font-family: "Tajawal", sans-serif;
+  background: linear-gradient(135deg, #7dd3fc, #1d4ed8);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  min-height: 100vh;
 }
 
-// تسجيل الدخول
-function login() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value;
-  const msg = document.getElementById('login-message');
-
-  const playerRef = ref(db, 'players/' + username);
-  get(playerRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const player = snapshot.val();
-      if (player.password === password) {
-        currentPlayer = player.playerData;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'block';
-        document.getElementById('current-player').textContent = currentPlayer.name;
-        startGameLoop();
-      } else {
-        msg.innerHTML = "❌ كلمة المرور غير صحيحة";
-      }
-    } else {
-      msg.innerHTML = "❌ اسم المستخدم غير موجود";
-    }
-  });
+/* واجهة تسجيل الدخول */
+#login-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-// عرض وإخفاء النماذج
-function showRegister() {
-  document.getElementById('login-form').style.display = 'none';
-  document.getElementById('register-form').style.display = 'block';
+#login-form, #register-form {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 25px 35px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  width: 320px;
+  max-width: 90%;
 }
 
-function showLogin() {
-  document.getElementById('register-form').style.display = 'none';
-  document.getElementById('login-form').style.display = 'block';
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-size: 15px;
 }
 
-function logout() {
-  currentPlayer = null;
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  showLogin();
+button {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background 0.3s ease;
 }
 
-function startGameLoop() {
-  if (gameInterval) clearInterval(gameInterval);
-  gameInterval = setInterval(() => {
-    if (!currentPlayer) return;
-    currentPlayer.gold += 1;
-    document.getElementById('gold').textContent = currentPlayer.gold;
-    update(ref(db, { ['players/' + currentPlayer.name + '/playerData']: currentPlayer }));
-  }, 1000);
+button:hover {
+  background: #1e40af;
+}
+
+#game-screen {
+  display: none;
+  padding: 20px;
+}
+
+#player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  padding: 10px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+#leaderboard {
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 10px auto;
+}
+
+.section {
+  background: rgba(0,0,0,0.2);
+  margin: 15px auto;
+  padding: 15px;
+  border-radius: 15px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.progress-bar {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  height: 22px;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  background: #22c55e;
+  height: 100%;
+  width: 0%;
+  color: #fff;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s ease;
 }
