@@ -15,6 +15,10 @@ function loadPlayers() {
 }
 
 function savePlayers() {
+    // التأكد من تحديث بيانات اللاعب الحالي قبل الحفظ
+    if (currentPlayer) {
+        players[currentPlayer.name].playerData = currentPlayer;
+    }
     localStorage.setItem('farmGamePlayers', JSON.stringify(players));
 }
 
@@ -90,6 +94,9 @@ function login() {
         return;
     }
 
+    // إعادة تحميل اللاعبين من localStorage للتأكد من أحدث البيانات
+    loadPlayers();
+    
     const player = players[username];
     
     if (!player || player.password !== password) {
@@ -146,6 +153,7 @@ function startGameLoop() {
             currentPlayer.score += production;
             currentPlayer.farmTimer = FARM_TIME;
             showMessage(`🌱 حصلت على ${production} غذاء من المزرعة!`);
+            savePlayers(); // حفظ بعد الإنتاج
         }
         
         // تحديث مؤقت المنجم
@@ -157,6 +165,7 @@ function startGameLoop() {
             currentPlayer.score += production * 2;
             currentPlayer.mineTimer = MINE_TIME;
             showMessage(`⛏️ حصلت على ${production} حديد من المنجم!`);
+            savePlayers(); // حفظ بعد الإنتاج
         }
         
         // تحديث مؤقت الذهب
@@ -167,6 +176,7 @@ function startGameLoop() {
             currentPlayer.score += income;
             currentPlayer.goldTimer = GOLD_TIME;
             showMessage(`💰 حصلت على ${income} ذهب!`);
+            savePlayers(); // حفظ بعد الإنتاج
         }
         
         updateUI();
@@ -190,6 +200,7 @@ function upgradeFarm() {
         currentPlayer.score += 100;
         
         updateUI();
+        savePlayers(); // حفظ بعد الترقية
         showMessage(`🚀 تم تطوير المزرعة إلى المستوى ${currentPlayer.farmLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير المزرعة`);
@@ -206,6 +217,7 @@ function upgradeMine() {
         currentPlayer.score += 100;
         
         updateUI();
+        savePlayers(); // حفظ بعد الترقية
         showMessage(`⚡ تم تطوير المنجم إلى المستوى ${currentPlayer.mineLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير المنجم`);
@@ -222,6 +234,7 @@ function upgradeGold() {
         currentPlayer.score += 80;
         
         updateUI();
+        savePlayers(); // حفظ بعد الترقية
         showMessage(`💎 تم تطوير الدخل إلى المستوى ${currentPlayer.goldLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير الدخل`);
@@ -285,18 +298,29 @@ function updateUI() {
 }
 
 function updateLeaderboard() {
-    const playersArray = Object.values(players).map(p => p.playerData);
+    // تحميل أحدث البيانات من localStorage
+    const latestPlayers = JSON.parse(localStorage.getItem('farmGamePlayers')) || {};
+    const playersArray = Object.values(latestPlayers).map(p => p.playerData);
     
     const leaderboard = document.getElementById('players-list');
+    
+    if (playersArray.length === 0) {
+        leaderboard.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">لا يوجد لاعبين بعد</div>';
+        return;
+    }
+    
     leaderboard.innerHTML = playersArray
         .sort((a, b) => b.score - a.score)
-        .map((player, index) => `
-            <div class="leaderboard-item ${player.name === currentPlayer.name ? 'current-player' : ''}">
-                <span class="rank">${index + 1}</span>
-                <span class="name">${player.name}</span>
-                <span class="score">${player.score} نقطة</span>
-            </div>
-        `)
+        .map((player, index) => {
+            const isCurrentPlayer = currentPlayer && player.name === currentPlayer.name;
+            return `
+                <div class="leaderboard-item ${isCurrentPlayer ? 'current-player' : ''}">
+                    <span class="rank">${index + 1}</span>
+                    <span class="name">${player.name}</span>
+                    <span class="score">${player.score} نقطة</span>
+                </div>
+            `;
+        })
         .join('');
 }
 
@@ -340,11 +364,3 @@ window.addEventListener('DOMContentLoaded', function() {
     loadPlayers();
     checkLastPlayer();
 });
-
-// حفظ بيانات اللاعب كل 30 ثانية
-setInterval(() => {
-    if (currentPlayer) {
-        players[currentPlayer.name].playerData = currentPlayer;
-        savePlayers();
-    }
-}, 30000);
