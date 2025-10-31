@@ -7,21 +7,14 @@ const FARM_TIME = 300; // 5 دقائق
 const MINE_TIME = 300; // 5 دقائق
 const GOLD_TIME = 60;  // 1 دقيقة
 
-// تحميل البيانات من localStorage
 function loadPlayers() {
     const saved = localStorage.getItem('farmGamePlayers');
-    console.log('تحميل البيانات:', saved);
     if (saved) {
         players = JSON.parse(saved);
-        console.log('اللاعبون المحملون:', players);
-    } else {
-        players = {};
     }
 }
 
-// حفظ البيانات إلى localStorage
 function savePlayers() {
-    console.log('حفظ البيانات:', players);
     localStorage.setItem('farmGamePlayers', JSON.stringify(players));
 }
 
@@ -52,9 +45,8 @@ function register() {
         return;
     }
 
-    // تحميل أحدث البيانات قبل التحقق
-    loadPlayers();
-    
+    loadPlayers(); // ✅ تحميل اللاعبين الموجودين قبل إنشاء لاعب جديد
+
     if (players[username]) {
         message.innerHTML = '<span style="color: red;">❌ اسم المستخدم موجود مسبقاً</span>';
         return;
@@ -100,9 +92,9 @@ function login() {
         return;
     }
 
-    // تحميل أحدث البيانات
+    // ✅ تحميل جميع اللاعبين من التخزين المحلي
     loadPlayers();
-    
+
     const player = players[username];
     
     if (!player || player.password !== password) {
@@ -110,7 +102,7 @@ function login() {
         return;
     }
 
-    currentPlayer = {...player.playerData}; // إنشاء نسخة جديدة
+    currentPlayer = player.playerData;
     currentPlayer.lastLogin = new Date().toISOString();
     
     // التأكد من وجود المؤقتات
@@ -135,10 +127,8 @@ function login() {
 function logout() {
     stopGameLoop();
     
-    if (currentPlayer) {
-        players[currentPlayer.name].playerData = currentPlayer;
-        savePlayers();
-    }
+    players[currentPlayer.name].playerData = currentPlayer;
+    savePlayers();
     
     currentPlayer = null;
     document.getElementById('game-screen').style.display = 'none';
@@ -152,8 +142,6 @@ function startGameLoop() {
     }
     
     gameInterval = setInterval(() => {
-        if (!currentPlayer) return;
-        
         // تحديث مؤقت المزرعة
         currentPlayer.farmTimer--;
         if (currentPlayer.farmTimer <= 0) {
@@ -163,7 +151,6 @@ function startGameLoop() {
             currentPlayer.score += production;
             currentPlayer.farmTimer = FARM_TIME;
             showMessage(`🌱 حصلت على ${production} غذاء من المزرعة!`);
-            saveCurrentPlayer();
         }
         
         // تحديث مؤقت المنجم
@@ -175,7 +162,6 @@ function startGameLoop() {
             currentPlayer.score += production * 2;
             currentPlayer.mineTimer = MINE_TIME;
             showMessage(`⛏️ حصلت على ${production} حديد من المنجم!`);
-            saveCurrentPlayer();
         }
         
         // تحديث مؤقت الذهب
@@ -186,7 +172,6 @@ function startGameLoop() {
             currentPlayer.score += income;
             currentPlayer.goldTimer = GOLD_TIME;
             showMessage(`💰 حصلت على ${income} ذهب!`);
-            saveCurrentPlayer();
         }
         
         updateUI();
@@ -200,14 +185,6 @@ function stopGameLoop() {
     }
 }
 
-// دالة مساعدة لحفظ اللاعب الحالي
-function saveCurrentPlayer() {
-    if (currentPlayer) {
-        players[currentPlayer.name].playerData = currentPlayer;
-        savePlayers();
-    }
-}
-
 function upgradeFarm() {
     if (!currentPlayer) return;
     const cost = 50 + (currentPlayer.farmLevel - 1) * 20;
@@ -218,7 +195,6 @@ function upgradeFarm() {
         currentPlayer.score += 100;
         
         updateUI();
-        saveCurrentPlayer();
         showMessage(`🚀 تم تطوير المزرعة إلى المستوى ${currentPlayer.farmLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير المزرعة`);
@@ -235,7 +211,6 @@ function upgradeMine() {
         currentPlayer.score += 100;
         
         updateUI();
-        saveCurrentPlayer();
         showMessage(`⚡ تم تطوير المنجم إلى المستوى ${currentPlayer.mineLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير المنجم`);
@@ -252,7 +227,6 @@ function upgradeGold() {
         currentPlayer.score += 80;
         
         updateUI();
-        saveCurrentPlayer();
         showMessage(`💎 تم تطوير الدخل إلى المستوى ${currentPlayer.goldLevel}!`);
     } else {
         showMessage(`❌ تحتاج ${cost} ذهب لتطوير الدخل`);
@@ -268,7 +242,6 @@ function formatTime(seconds) {
 function updateUI() {
     if (!currentPlayer) return;
     
-    // تحديث الموارد
     document.getElementById('gold').textContent = currentPlayer.gold;
     document.getElementById('food').textContent = currentPlayer.food;
     document.getElementById('iron').textContent = currentPlayer.iron;
@@ -276,78 +249,32 @@ function updateUI() {
     document.getElementById('mined-iron').textContent = currentPlayer.minedIron;
     document.getElementById('score').textContent = currentPlayer.score;
     
-    // تحديث المستويات
     document.getElementById('farm-level').textContent = currentPlayer.farmLevel;
     document.getElementById('mine-level').textContent = currentPlayer.mineLevel;
     document.getElementById('level').textContent = Math.max(currentPlayer.farmLevel, currentPlayer.mineLevel, currentPlayer.goldLevel);
     
-    // تحديث الإنتاج
-    const farmProduction = 10 + (currentPlayer.farmLevel - 1) * 5;
-    const mineProduction = 8 + (currentPlayer.mineLevel - 1) * 4;
-    const goldIncome = 5 * currentPlayer.goldLevel;
-    
-    document.getElementById('farm-production').textContent = farmProduction;
-    document.getElementById('mine-production').textContent = mineProduction;
-    document.getElementById('auto-income').textContent = goldIncome;
-    
-    // تحديث التكاليف
-    document.getElementById('farm-cost').textContent = 50 + (currentPlayer.farmLevel - 1) * 20;
-    document.getElementById('mine-cost').textContent = 50 + (currentPlayer.mineLevel - 1) * 20;
-    document.getElementById('gold-cost').textContent = 30 + (currentPlayer.goldLevel - 1) * 15;
-    
-    // تحديث أشرطة التقدم
     const farmProgress = ((FARM_TIME - currentPlayer.farmTimer) / FARM_TIME) * 100;
     const mineProgress = ((MINE_TIME - currentPlayer.mineTimer) / MINE_TIME) * 100;
     const goldProgress = ((GOLD_TIME - currentPlayer.goldTimer) / GOLD_TIME) * 100;
-    
-    document.getElementById('farm-progress').style.width = farmProgress + '%';
-    document.getElementById('mine-progress').style.width = mineProgress + '%';
-    document.getElementById('gold-progress').style.width = goldProgress + '%';
-    
-    document.getElementById('farm-timer').textContent = formatTime(currentPlayer.farmTimer);
-    document.getElementById('mine-timer').textContent = formatTime(currentPlayer.mineTimer);
-    document.getElementById('gold-timer').textContent = formatTime(currentPlayer.goldTimer);
     
     updateLeaderboard();
 }
 
 function updateLeaderboard() {
-    console.log('تحديث لوحة المتصدرين...');
-    
-    // تحميل أحدث البيانات مباشرة من localStorage
-    const saved = localStorage.getItem('farmGamePlayers');
-    const allPlayers = saved ? JSON.parse(saved) : {};
-    
-    console.log('جميع اللاعبين:', allPlayers);
-    
-    const playersArray = Object.values(allPlayers).map(p => p.playerData);
-    
-    console.log('مصفوفة اللاعبين:', playersArray);
-    
+    loadPlayers(); // ✅ تحديث البيانات من التخزين المحلي قبل العرض
+
+    const playersArray = Object.values(players).map(p => p.playerData);
     const leaderboard = document.getElementById('players-list');
     
-    if (playersArray.length === 0) {
-        leaderboard.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">لا يوجد لاعبين بعد</div>';
-        return;
-    }
-    
-    // ترتيب اللاعبين حسب النقاط
-    const sortedPlayers = playersArray.sort((a, b) => b.score - a.score);
-    
-    console.log('اللاعبون المرتبون:', sortedPlayers);
-    
-    leaderboard.innerHTML = sortedPlayers
-        .map((player, index) => {
-            const isCurrentPlayer = currentPlayer && player.name === currentPlayer.name;
-            console.log(`اللاعب: ${player.name}, النقاط: ${player.score}, لاعب حالي: ${isCurrentPlayer}`);
-            return `
-                <div class="leaderboard-item ${isCurrentPlayer ? 'current-player' : ''}">
-                    <span class="rank">${index + 1}</span>
-                    <span class="name">${player.name}</span>
-                    <span class="score">${player.score} نقطة</span>
-                </div>
-            `;
-        })
+    leaderboard.innerHTML = playersArray
+        .sort((a, b) => b.score - a.score)
+        .map((player, index) => `
+            <div class="leaderboard-item ${player.name === currentPlayer.name ? 'current-player' : ''}">
+                <span class="rank">${index + 1}</span>
+                <span class="name">${player.name}</span>
+                <span class="score">${player.score} نقطة</span>
+            </div>
+        `)
         .join('');
 }
 
@@ -381,78 +308,21 @@ function showMessage(msg) {
 
 function checkLastPlayer() {
     const lastPlayer = localStorage.getItem('lastPlayer');
-    if (lastPlayer) {
+    if (lastPlayer && players[lastPlayer]) {
         document.getElementById('username').value = lastPlayer;
     }
-}
-
-// اختبار: إضافة لاعبين افتراضيين للاختبار
-function addTestPlayers() {
-    loadPlayers();
-    
-    if (!players['احمد']) {
-        players['احمد'] = {
-            password: '123',
-            playerData: {
-                name: 'احمد',
-                gold: 150,
-                food: 50,
-                iron: 30,
-                crops: 200,
-                minedIron: 100,
-                farmLevel: 2,
-                mineLevel: 1,
-                goldLevel: 3,
-                score: 500,
-                farmTimer: FARM_TIME,
-                mineTimer: MINE_TIME,
-                goldTimer: GOLD_TIME,
-                joinDate: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            }
-        };
-    }
-    
-    if (!players['فاطمة']) {
-        players['فاطمة'] = {
-            password: '123',
-            playerData: {
-                name: 'فاطمة',
-                gold: 200,
-                food: 80,
-                iron: 50,
-                crops: 300,
-                minedIron: 150,
-                farmLevel: 3,
-                mineLevel: 2,
-                goldLevel: 2,
-                score: 800,
-                farmTimer: FARM_TIME,
-                mineTimer: MINE_TIME,
-                goldTimer: GOLD_TIME,
-                joinDate: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            }
-        };
-    }
-    
-    savePlayers();
-    console.log('تم إضافة لاعبين اختبارين');
 }
 
 // تهيئة اللعبة عند تحميل الصفحة
 window.addEventListener('DOMContentLoaded', function() {
     loadPlayers();
     checkLastPlayer();
-    addTestPlayers(); // إضافة لاعبين اختبارين
-    
-    // تحديث لوحة المتصدرين فور تحميل الصفحة
-    updateLeaderboard();
 });
 
 // حفظ بيانات اللاعب كل 30 ثانية
 setInterval(() => {
     if (currentPlayer) {
-        saveCurrentPlayer();
+        players[currentPlayer.name].playerData = currentPlayer;
+        savePlayers();
     }
 }, 30000);
