@@ -4,6 +4,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
+// 🔧 بيانات الاتصال الخاصة بك
 const firebaseConfig = {
   apiKey: "YOUR-API-KEY",
   authDomain: "YOUR-DOMAIN.firebaseapp.com",
@@ -14,6 +15,7 @@ const firebaseConfig = {
   appId: "YOUR-APP-ID"
 };
 
+// تهيئة Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -21,8 +23,6 @@ const db = getDatabase(app);
 // المتغيرات العامة
 // ------------------------------
 const BASE_FARM_TIME = 60;
-const BASE_MINE_TIME = 90;
-const BASE_QUARRY_TIME = 120;
 
 let currentUser = null;
 let playerData = null;
@@ -31,12 +31,12 @@ let playerData = null;
 // عرض النماذج
 // ------------------------------
 function showLogin() {
+  document.getElementById("login-form").style.display = "block";
   document.getElementById("register-form").style.display = "none";
-  document.getElementById("login-screen").style.display = "block";
 }
 
 function showRegister() {
-  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("login-form").style.display = "none";
   document.getElementById("register-form").style.display = "block";
 }
 
@@ -58,7 +58,6 @@ async function register() {
 
   try {
     const snapshot = await get(playerRef);
-
     if (snapshot.exists()) {
       msg.innerHTML = "❌ هذا الاسم مستخدم مسبقًا";
       msg.style.color = "red";
@@ -75,34 +74,24 @@ async function register() {
         stone: 0,
         buildingMaterials: 0,
         crops: 0,
-        minedIron: 0,
-        minedStone: 0,
         farmLevel: 1,
-        mineLevel: 1,
-        quarryLevel: 1,
-        factoryLevel: 0,
-        villageLevel: 0,
-        armyLevel: 0,
-        marketLevel: 1,
         score: 0,
         level: 1,
         farmTimer: BASE_FARM_TIME,
-        mineTimer: BASE_MINE_TIME,
-        quarryTimer: BASE_QUARRY_TIME,
         joinDate: new Date().toISOString(),
         lastLogin: new Date().toISOString()
       }
     };
 
     await set(playerRef, newPlayer);
-
     msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
     msg.style.color = "green";
+
     setTimeout(showLogin, 2000);
 
   } catch (error) {
     console.error("❌ خطأ أثناء إنشاء الحساب:", error);
-    msg.innerHTML = "⚠️ حدث خطأ أثناء إنشاء الحساب. تحقق من الاتصال بقاعدة البيانات.";
+    msg.innerHTML = "⚠️ حدث خطأ أثناء إنشاء الحساب";
     msg.style.color = "orange";
   }
 }
@@ -141,7 +130,6 @@ async function login() {
     currentUser = username;
     playerData = data.playerData;
     playerData.lastLogin = new Date().toISOString();
-
     await update(playerRef, { "playerData/lastLogin": playerData.lastLogin });
 
     document.getElementById("login-screen").style.display = "none";
@@ -162,8 +150,12 @@ async function login() {
 function loadGameData() {
   document.getElementById("current-player").innerText = playerData.name;
   document.getElementById("gold").innerText = playerData.gold;
-  document.getElementById("market-level").innerText = playerData.marketLevel;
-  // أضف بقية البيانات عند الحاجة
+  document.getElementById("food").innerText = playerData.food;
+  document.getElementById("iron").innerText = playerData.iron;
+  document.getElementById("stone").innerText = playerData.stone;
+  document.getElementById("building-materials").innerText = playerData.buildingMaterials;
+  document.getElementById("level").innerText = playerData.level;
+  document.getElementById("score").innerText = playerData.score;
 }
 
 // ------------------------------
@@ -173,7 +165,7 @@ function logout() {
   currentUser = null;
   playerData = null;
   document.getElementById("game-screen").style.display = "none";
-  document.getElementById("login-screen").style.display = "block";
+  showLogin();
 }
 
 // ------------------------------
