@@ -580,6 +580,11 @@ function updateMarketDisplay() {
   const rateEl = document.getElementById('market-rate');
   const upgradeBtn = document.getElementById('upgrade-market');
   
+  // فحص وتحديث marketLevel إذا كان undefined
+  if (!currentPlayer.marketLevel || currentPlayer.marketLevel === 0) {
+    currentPlayer.marketLevel = 1;
+  }
+  
   const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
   marketEl.textContent = currentPlayer.marketLevel;
   rateEl.textContent = market.sellRate;
@@ -779,6 +784,12 @@ window.upgradeMarket = function() {
 window.sellFood = function() {
   if (!currentPlayer) return;
   
+  // فحص وتحديث marketLevel إذا كان undefined
+  if (!currentPlayer.marketLevel || currentPlayer.marketLevel === 0) {
+    currentPlayer.marketLevel = 1;
+    savePlayerData();
+  }
+  
   const amount = parseInt(prompt('كم من الغذاء تريد بيعه؟'));
   
   if (isNaN(amount) || amount <= 0) {
@@ -802,6 +813,12 @@ window.sellFood = function() {
 
 window.sellBuildingMaterials = function() {
   if (!currentPlayer) return;
+  
+  // فحص وتحديث marketLevel إذا كان undefined
+  if (!currentPlayer.marketLevel || currentPlayer.marketLevel === 0) {
+    currentPlayer.marketLevel = 1;
+    savePlayerData();
+  }
   
   const amount = parseInt(prompt('كم من مواد البناء تريد بيعها؟'));
   
