@@ -5,7 +5,7 @@ import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic
 const firebaseConfig = {
   apiKey: "AIzaSyCIngK0rjuc0afE5rDjNHzV7ALmBj0CY78",
   authDomain: "farm-ecb9f.firebaseapp.com",
-  databaseURL: "https://game-49b32-default-rtdb.firebaseio.com",  // ← غيّر هذا السطر
+  databaseURL: "https://farm-ecb9f-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "farm-ecb9f",
   storageBucket: "farm-ecb9f.firebasestorage.app",
   messagingSenderId: "500210794931",
