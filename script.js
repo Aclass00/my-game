@@ -11,16 +11,12 @@ const firebaseConfig = {
   appId: "1:164126998957:web:82b358b9ce73ee179fcd13"
 };
 
-// 🔹 تهيئة Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 let currentUser = null;
 
-// ------------------------------
-// شاشة تسجيل الدخول والتسجيل
-// ------------------------------
-
+// عناصر الواجهة
 const loginForm = document.getElementById("login-form");
 const registerForm = document.getElementById("register-form");
 const showRegisterBtn = document.getElementById("show-register-btn");
@@ -28,6 +24,7 @@ const showLoginBtn = document.getElementById("show-login-btn");
 const loginBtn = document.getElementById("login-btn");
 const registerBtn = document.getElementById("register-btn");
 
+// التنقل بين الصفحات
 showRegisterBtn.addEventListener("click", () => {
   loginForm.style.display = "none";
   registerForm.style.display = "block";
@@ -38,9 +35,7 @@ showLoginBtn.addEventListener("click", () => {
   loginForm.style.display = "block";
 });
 
-// ------------------------------
-// إنشاء حساب جديد (الإصدار الآمن)
-// ------------------------------
+// إنشاء حساب جديد
 registerBtn.addEventListener("click", async () => {
   const username = document.getElementById("new-username").value.trim();
   const password = document.getElementById("new-password").value;
@@ -56,18 +51,14 @@ registerBtn.addEventListener("click", async () => {
   const snapshot = await get(userRef);
 
   if (snapshot.exists()) {
-    msg.textContent = "❌ هذا الاسم مستخدم مسبقًا";
+    msg.textContent = "❌ الاسم مستخدم مسبقًا";
     msg.style.color = "red";
     return;
   }
 
   try {
-    // 1️⃣ إنشاء الحساب بكلمة المرور فقط
-    await set(userRef, { password: password });
-
-    // 2️⃣ بعدها نضيف بيانات اللاعب
     const playerData = {
-      name: username,
+      password: password,
       gold: 100,
       food: 0,
       iron: 0,
@@ -82,14 +73,14 @@ registerBtn.addEventListener("click", async () => {
       factoryLevel: 0,
       villageLevel: 0,
       armyLevel: 0,
-      marketLevel: 1, // ✅ السوق يبدأ من المستوى 1
+      marketLevel: 1, // ✅ السوق يبدأ من المستوى 1 مباشرة
       score: 0,
       level: 1,
       joinDate: new Date().toISOString(),
       lastLogin: new Date().toISOString()
     };
 
-    await update(userRef, { playerData: playerData });
+    await set(userRef, playerData);
 
     msg.textContent = "✅ تم إنشاء الحساب بنجاح!";
     msg.style.color = "green";
@@ -98,16 +89,14 @@ registerBtn.addEventListener("click", async () => {
       loginForm.style.display = "block";
     }, 1500);
 
-  } catch (err) {
-    console.error("خطأ أثناء إنشاء الحساب:", err);
-    msg.textContent = "⚠️ حدث خطأ أثناء إنشاء الحساب، حاول لاحقًا";
+  } catch (error) {
+    console.error("خطأ في إنشاء الحساب:", error);
+    msg.textContent = "⚠️ حدث خطأ أثناء إنشاء الحساب";
     msg.style.color = "red";
   }
 });
 
-// ------------------------------
 // تسجيل الدخول
-// ------------------------------
 loginBtn.addEventListener("click", async () => {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
@@ -129,7 +118,6 @@ loginBtn.addEventListener("click", async () => {
   }
 
   const data = snapshot.val();
-
   if (data.password !== password) {
     msg.textContent = "❌ كلمة المرور غير صحيحة";
     msg.style.color = "red";
@@ -140,7 +128,7 @@ loginBtn.addEventListener("click", async () => {
   msg.textContent = "✅ تم تسجيل الدخول بنجاح!";
   msg.style.color = "green";
 
-  await update(userRef, { "playerData/lastLogin": new Date().toISOString() });
+  await update(userRef, { lastLogin: new Date().toISOString() });
 
   setTimeout(() => {
     document.getElementById("login-screen").style.display = "none";
@@ -150,11 +138,9 @@ loginBtn.addEventListener("click", async () => {
   }, 1000);
 });
 
-// ------------------------------
 // تحميل بيانات اللاعب
-// ------------------------------
 async function loadPlayerData() {
-  const userRef = ref(db, "players/" + currentUser + "/playerData");
+  const userRef = ref(db, "players/" + currentUser);
   onValue(userRef, (snapshot) => {
     if (snapshot.exists()) {
       const data = snapshot.val();
@@ -172,14 +158,12 @@ async function loadPlayerData() {
       document.getElementById("factory-level").textContent = data.factoryLevel || "—";
       document.getElementById("village-level").textContent = data.villageLevel || "—";
       document.getElementById("army-level").textContent = data.armyLevel || "—";
-      document.getElementById("market-level").textContent = data.marketLevel || 1; // ✅ تأكيد السوق دائماً يبدأ من 1
+      document.getElementById("market-level").textContent = data.marketLevel || 1;
     }
   });
 }
 
-// ------------------------------
 // تسجيل الخروج
-// ------------------------------
 document.getElementById("logout-btn").addEventListener("click", () => {
   currentUser = null;
   document.getElementById("game-screen").style.display = "none";
