@@ -242,11 +242,18 @@ function register() {
           lastLogin: new Date().toISOString()
         }
       };
-      set(playerRef, newPlayer);
-      msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
-      msg.style.color = "#27ae60";
-      setTimeout(showLogin, 2000);
+      set(playerRef, newPlayer).then(() => {
+        msg.innerHTML = "✅ تم إنشاء الحساب بنجاح!";
+        msg.style.color = "#27ae60";
+        setTimeout(showLogin, 2000);
+      }).catch(error => {
+        msg.innerHTML = "❌ خطأ: " + error.message;
+        msg.style.color = "#e74c3c";
+      });
     }
+  }).catch(error => {
+    msg.innerHTML = "❌ خطأ في الاتصال: " + error.message;
+    msg.style.color = "#e74c3c";
   });
 }
 
@@ -281,6 +288,9 @@ function login() {
       msg.innerHTML = "❌ اسم المستخدم غير موجود";
       msg.style.color = "#e74c3c";
     }
+  }).catch(error => {
+    msg.innerHTML = "❌ خطأ في الاتصال: " + error.message;
+    msg.style.color = "#e74c3c";
   });
 }
 
@@ -366,6 +376,43 @@ function startGameLoop() {
       savePlayerData();
     }
   }, 1000);
+}
+
+// حفظ بيانات اللاعب
+function savePlayerData() {
+  if (!currentPlayer) return;
+  const playerRef = ref(db, 'players/' + currentPlayer.name + '/playerData');
+  update(playerRef, currentPlayer);
+}
+
+// تحميل لوحة المتصدرين
+function loadLeaderboard() {
+  const playersRef = ref(db, 'players');
+  onValue(playersRef, (snapshot) => {
+    const players = [];
+    snapshot.forEach((childSnapshot) => {
+      const data = childSnapshot.val();
+      if (data.playerData) {
+        players.push(data.playerData);
+      }
+    });
+    
+    players.sort((a, b) => b.score - a.score);
+    
+    const leaderboardEl = document.getElementById('players-list');
+    leaderboardEl.innerHTML = '';
+    
+    players.slice(0, 10).forEach((player, index) => {
+      const div = document.createElement('div');
+      div.className = 'leaderboard-item' + (player.name === currentPlayer.name ? ' current-player' : '');
+      div.innerHTML = `
+        <span class="rank">#${index + 1}</span>
+        <span class="name">${player.name}</span>
+        <span class="score">${Math.floor(player.score)} نقطة</span>
+      `;
+      leaderboardEl.appendChild(div);
+    });
+  });
 }
 
 // تحديث العرض
@@ -510,67 +557,4 @@ function updateMarketDisplay() {
   const upgradeBtn = document.getElementById('upgrade-market');
   
   const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
-  marketEl.textContent = currentPlayer.marketLevel;
-  rateEl.textContent = market.sellRate;
-  
-  if (currentPlayer.marketLevel < 6) {
-    const nextMarket = BUILDINGS.market[currentPlayer.marketLevel];
-    upgradeBtn.textContent = `تطوير السوق (تكلفة: ${nextMarket.cost} ذهب)`;
-    upgradeBtn.disabled = false;
-  } else {
-    upgradeBtn.textContent = 'المستوى الأقصى';
-    upgradeBtn.disabled = true;
-  }
-}
-
-// تنسيق الوقت
-function formatTime(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-// تطوير المزرعة
-window.upgradeFarm = function() {
-  if (currentPlayer.farmLevel >= 20) {
-    alert('⚠️ وصلت للمستوى الأقصى!');
-    return;
-  }
-  
-  const nextLevel = LEVEL_CONFIG.farm[currentPlayer.farmLevel];
-  if (currentPlayer.gold >= nextLevel.cost) {
-    currentPlayer.gold -= nextLevel.cost;
-    currentPlayer.farmLevel++;
-    currentPlayer.farmTimer = nextLevel.time;
-    updateDisplay();
-    savePlayerData();
-    alert('✅ تم تطوير المزرعة!');
-  } else {
-    alert('❌ ذهب غير كافٍ!');
-  }
-}
-
-// تطوير المنجم
-window.upgradeMine = function() {
-  if (currentPlayer.mineLevel >= 20) {
-    alert('⚠️ وصلت للمستوى الأقصى!');
-    return;
-  }
-  
-  const nextLevel = LEVEL_CONFIG.mine[currentPlayer.mineLevel];
-  if (currentPlayer.gold >= nextLevel.cost) {
-    currentPlayer.gold -= nextLevel.cost;
-    currentPlayer.mineLevel++;
-    currentPlayer.mineTimer = nextLevel.time;
-    updateDisplay();
-    savePlayerData();
-    alert('✅ تم تطوير المنجم!');
-  } else {
-    alert('❌ ذهب غير كافٍ!');
-  }
-}
-
-// تطوير المحجر
-window.upgradeQuarry = function() {
-  if (currentPlayer.quarryLevel >= 20) {
-    alert('⚠️
+  marketEl.
