@@ -514,6 +514,200 @@ window.upgradeFarm = function() {
   const nextLevel = LEVEL_CONFIG.farm[currentPlayer.farmLevel];
   if (currentPlayer.gold >= nextLevel.cost) {
     currentPlayer.gold -= nextLevel.cost;
+    currentPlayer.mineLevel++;
+    currentPlayer.mineTimer = nextLevel.time;
+    updateDisplay();
+    savePlayerData();
+    alert('✅ تم تطوير المنجم!');
+  } else {
+    alert('❌ ذهب غير كافٍ!');
+  }
+}
+
+window.upgradeQuarry = function() {
+  if (currentPlayer.quarryLevel >= 20) {
+    alert('⚠️ وصلت للمستوى الأقصى!');
+    return;
+  }
+  const nextLevel = LEVEL_CONFIG.quarry[currentPlayer.quarryLevel];
+  if (currentPlayer.gold >= nextLevel.cost) {
+    currentPlayer.gold -= nextLevel.cost;
+    currentPlayer.quarryLevel++;
+    currentPlayer.quarryTimer = nextLevel.time;
+    updateDisplay();
+    savePlayerData();
+    alert('✅ تم تطوير المحجر!');
+  } else {
+    alert('❌ ذهب غير كافٍ!');
+  }
+}
+
+window.upgradeFactory = function() {
+  if (currentPlayer.factoryLevel === 0) {
+    const factory = BUILDINGS.factory[0];
+    if (currentPlayer.gold >= factory.cost) {
+      currentPlayer.gold -= factory.cost;
+      currentPlayer.factoryLevel = 1;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم بناء المصنع!');
+    } else {
+      alert('❌ ذهب غير كافٍ!');
+    }
+  } else if (currentPlayer.factoryLevel < 6) {
+    const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel];
+    if (currentPlayer.gold >= nextFactory.cost) {
+      currentPlayer.gold -= nextFactory.cost;
+      currentPlayer.factoryLevel++;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم تطوير المصنع!');
+    } else {
+      alert('❌ ذهب غير كافٍ!');
+    }
+  }
+}
+
+window.produceBuilding = function() {
+  if (currentPlayer.factoryLevel === 0) {
+    alert('❌ يجب بناء المصنع أولاً!');
+    return;
+  }
+  const factory = BUILDINGS.factory[currentPlayer.factoryLevel - 1];
+  if (currentPlayer.iron >= factory.ironReq && currentPlayer.stone >= factory.stoneReq) {
+    currentPlayer.iron -= factory.ironReq;
+    currentPlayer.stone -= factory.stoneReq;
+    currentPlayer.buildingMaterials += factory.produces;
+    updateDisplay();
+    savePlayerData();
+    alert(`✅ تم إنتاج ${factory.produces} مواد بناء!`);
+  } else {
+    alert('❌ موارد غير كافية!');
+  }
+}
+
+window.upgradeVillage = function() {
+  if (currentPlayer.villageLevel === 0) {
+    const village = BUILDINGS.village[0];
+    if (currentPlayer.gold >= village.goldCost && 
+        currentPlayer.buildingMaterials >= village.buildMatCost && 
+        currentPlayer.food >= village.foodReq) {
+      currentPlayer.gold -= village.goldCost;
+      currentPlayer.buildingMaterials -= village.buildMatCost;
+      currentPlayer.food -= village.foodReq;
+      currentPlayer.villageLevel = 1;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم بناء القرية!');
+    } else {
+      alert('❌ موارد غير كافية!');
+    }
+  } else if (currentPlayer.villageLevel < 6) {
+    const nextVillage = BUILDINGS.village[currentPlayer.villageLevel];
+    if (currentPlayer.gold >= nextVillage.goldCost && 
+        currentPlayer.buildingMaterials >= nextVillage.buildMatCost && 
+        currentPlayer.food >= nextVillage.foodReq) {
+      currentPlayer.gold -= nextVillage.goldCost;
+      currentPlayer.buildingMaterials -= nextVillage.buildMatCost;
+      currentPlayer.food -= nextVillage.foodReq;
+      currentPlayer.villageLevel++;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم تطوير القرية!');
+    } else {
+      alert('❌ موارد غير كافية!');
+    }
+  }
+}
+
+window.upgradeArmy = function() {
+  if (currentPlayer.armyLevel === 0) {
+    const army = BUILDINGS.army[0];
+    if (currentPlayer.gold >= army.goldCost && 
+        currentPlayer.iron >= army.ironReq && 
+        currentPlayer.food >= army.foodReq) {
+      currentPlayer.gold -= army.goldCost;
+      currentPlayer.iron -= army.ironReq;
+      currentPlayer.food -= army.foodReq;
+      currentPlayer.armyLevel = 1;
+      currentPlayer.score += army.points;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم بناء الجيش!');
+    } else {
+      alert('❌ موارد غير كافية!');
+    }
+  } else if (currentPlayer.armyLevel < 6) {
+    const nextArmy = BUILDINGS.army[currentPlayer.armyLevel];
+    if (currentPlayer.gold >= nextArmy.goldCost && 
+        currentPlayer.iron >= nextArmy.ironReq && 
+        currentPlayer.food >= nextArmy.foodReq) {
+      currentPlayer.gold -= nextArmy.goldCost;
+      currentPlayer.iron -= nextArmy.ironReq;
+      currentPlayer.food -= nextArmy.foodReq;
+      currentPlayer.armyLevel++;
+      currentPlayer.score += nextArmy.points;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم تطوير الجيش!');
+    } else {
+      alert('❌ موارد غير كافية!');
+    }
+  }
+}
+
+window.upgradeMarket = function() {
+  if (currentPlayer.marketLevel >= 6) {
+    alert('⚠️ وصلت للمستوى الأقصى!');
+    return;
+  }
+  const nextMarket = BUILDINGS.market[currentPlayer.marketLevel];
+  if (currentPlayer.gold >= nextMarket.cost) {
+    currentPlayer.gold -= nextMarket.cost;
+    currentPlayer.marketLevel++;
+    updateDisplay();
+    savePlayerData();
+    alert('✅ تم تطوير السوق!');
+  } else {
+    alert('❌ ذهب غير كافٍ!');
+  }
+}
+
+window.sellFood = function() {
+  if (currentPlayer.food <= 0) {
+    alert('❌ لا يوجد غذاء للبيع!');
+    return;
+  }
+  const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
+  const amount = prompt(`كم وحدة غذاء تريد بيعها؟ (متوفر: ${Math.floor(currentPlayer.food)})`);
+  if (amount && !isNaN(amount) && amount > 0) {
+    const sellAmount = Math.min(parseInt(amount), Math.floor(currentPlayer.food));
+    const goldEarned = Math.floor(sellAmount * market.sellRate);
+    currentPlayer.food -= sellAmount;
+    currentPlayer.gold += goldEarned;
+    updateDisplay();
+    savePlayerData();
+    alert(`✅ تم بيع ${sellAmount} غذاء مقابل ${goldEarned} ذهب!`);
+  }
+}
+
+window.sellBuildingMaterials = function() {
+  if (currentPlayer.buildingMaterials <= 0) {
+    alert('❌ لا توجد مواد بناء للبيع!');
+    return;
+  }
+  const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
+  const amount = prompt(`كم وحدة مواد بناء تريد بيعها؟ (متوفر: ${Math.floor(currentPlayer.buildingMaterials)})`);
+  if (amount && !isNaN(amount) && amount > 0) {
+    const sellAmount = Math.min(parseInt(amount), Math.floor(currentPlayer.buildingMaterials));
+    const goldEarned = Math.floor(sellAmount * market.sellRate * 2);
+    currentPlayer.buildingMaterials -= sellAmount;
+    currentPlayer.gold += goldEarned;
+    updateDisplay();
+    savePlayerData();
+    alert(`✅ تم بيع ${sellAmount} مواد بناء مقابل ${goldEarned} ذهب!`);
+  }
+}d -= nextLevel.cost;
     currentPlayer.farmLevel++;
     currentPlayer.farmTimer = nextLevel.time;
     updateDisplay();
