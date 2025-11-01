@@ -97,6 +97,64 @@ button:disabled {
     margin: 0 auto;
     padding: 20px;
     animation: slideIn 0.5s ease-out;
+    position: relative;
+}
+
+/* إشعار الإنتاج أثناء الغياب */
+#offline-notification {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1000;
+    animation: slideInLeft 0.5s ease-out;
+    max-width: 350px;
+    font-weight: bold;
+}
+
+#offline-notification .close-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 25px;
+    padding: 0;
+    margin: 0;
+}
+
+#offline-notification .close-btn:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+#offline-notification h4 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+#offline-notification p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
 }
 
 @keyframes slideIn {
