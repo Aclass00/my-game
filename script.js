@@ -5,12 +5,11 @@ import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic
 const firebaseConfig = {
   apiKey: "AIzaSyCIngK0rjuc0afE5rDjNHzV7ALmBj0CY78",
   authDomain: "farm-ecb9f.firebaseapp.com",
-  databaseURL: "https://farm-ecb9f-default-rtdb.europe-west1.firebasedatabase.app",
+  // احذف databaseURL خليها Firebase يكتشفه تلقائياً
   projectId: "farm-ecb9f",
   storageBucket: "farm-ecb9f.firebasestorage.app",
   messagingSenderId: "500210794931",
-  appId: "1:500210794931:web:43466af6701d0f69844bc6",
-  measurementId: "G-2B17MMQRYK"
+  appId: "1:500210794931:web:43466af6701d0f69844bc6"
 };
 
 const app = initializeApp(firebaseConfig);
