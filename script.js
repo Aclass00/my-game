@@ -193,7 +193,10 @@ function calculateOfflineProgress() {
   
   // عرض إشعار الإنتاج
   if (foodGained > 0 || ironGained > 0 || stoneGained > 0) {
-    showOfflineNotification(foodGained, ironGained, stoneGained);
+    const notificationEl = document.getElementById('offline-notification');
+    if (notificationEl) {
+      showOfflineNotification(foodGained, ironGained, stoneGained);
+    }
   }
 }
 
@@ -298,14 +301,19 @@ function login() {
         document.getElementById('game-screen').style.display = 'block';
         document.getElementById('current-player').textContent = currentPlayer.name;
         
-        updateDisplay();
         startGameLoop();
         loadLeaderboard();
+        updateDisplay();
         
-        // حساب التقدم أثناء الأوفلاين (بعد تحميل كل شي)
-        setTimeout(() => {
-          calculateOfflineProgress();
-        }, 500);
+        // حساب التقدم أثناء الأوفلاين بعد ثانية
+        const lastLogin = new Date(currentPlayer.lastLogin).getTime();
+        const offlineTime = Math.floor((Date.now() - lastLogin) / 1000);
+        
+        if (offlineTime > 60) {
+          setTimeout(() => {
+            calculateOfflineProgress();
+          }, 1000);
+        }
       } else {
         msg.innerHTML = "❌ كلمة المرور غير صحيحة";
         msg.style.color = "#e74c3c";
