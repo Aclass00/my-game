@@ -747,8 +747,14 @@ window.upgradeMarket = function() {
 
 // البيع في السوق
 window.sellFood = function() {
+  if (!currentPlayer) return;
+  
   const amount = parseInt(prompt('كم من الغذاء تريد بيعه؟'));
-  if (isNaN(amount) || amount <= 0) return;
+  
+  if (isNaN(amount) || amount <= 0) {
+    alert('❌ الرجاء إدخال رقم صحيح!');
+    return;
+  }
   
   if (currentPlayer.food >= amount) {
     const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
@@ -760,13 +766,19 @@ window.sellFood = function() {
     savePlayerData();
     alert(`✅ تم بيع ${amount} غذاء مقابل ${goldEarned} ذهب!`);
   } else {
-    alert('❌ غذاء غير كافٍ!');
+    alert(`❌ غذاء غير كافٍ! لديك ${Math.floor(currentPlayer.food)} غذاء فقط.`);
   }
 }
 
 window.sellBuildingMaterials = function() {
+  if (!currentPlayer) return;
+  
   const amount = parseInt(prompt('كم من مواد البناء تريد بيعها؟'));
-  if (isNaN(amount) || amount <= 0) return;
+  
+  if (isNaN(amount) || amount <= 0) {
+    alert('❌ الرجاء إدخال رقم صحيح!');
+    return;
+  }
   
   if (currentPlayer.buildingMaterials >= amount) {
     const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
@@ -778,7 +790,7 @@ window.sellBuildingMaterials = function() {
     savePlayerData();
     alert(`✅ تم بيع ${amount} مواد بناء مقابل ${goldEarned} ذهب!`);
   } else {
-    alert('❌ مواد بناء غير كافية!');
+    alert(`❌ مواد بناء غير كافية! لديك ${Math.floor(currentPlayer.buildingMaterials)} فقط.`);
   }
 }
 
