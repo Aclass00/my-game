@@ -4,7 +4,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js";
 
-// 🔧 بيانات الاتصال الخاصة بك (استبدلها ببيانات مشروعك)
 const firebaseConfig = {
   apiKey: "YOUR-API-KEY",
   authDomain: "YOUR-DOMAIN.firebaseapp.com",
@@ -15,7 +14,6 @@ const firebaseConfig = {
   appId: "YOUR-APP-ID"
 };
 
-// تهيئة Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -33,17 +31,17 @@ let playerData = null;
 // عرض النماذج
 // ------------------------------
 function showLogin() {
-  document.getElementById("register-screen").style.display = "none";
+  document.getElementById("register-form").style.display = "none";
   document.getElementById("login-screen").style.display = "block";
 }
 
 function showRegister() {
   document.getElementById("login-screen").style.display = "none";
-  document.getElementById("register-screen").style.display = "block";
+  document.getElementById("register-form").style.display = "block";
 }
 
 // ------------------------------
-// تسجيل حساب جديد ✅ (إصلاح شامل)
+// تسجيل حساب جديد
 // ------------------------------
 async function register() {
   const username = document.getElementById("new-username").value.trim();
@@ -85,7 +83,7 @@ async function register() {
         factoryLevel: 0,
         villageLevel: 0,
         armyLevel: 0,
-        marketLevel: 1, // ✅ السوق يبدأ من المستوى 1
+        marketLevel: 1,
         score: 0,
         level: 1,
         farmTimer: BASE_FARM_TIME,
@@ -162,10 +160,10 @@ async function login() {
 // تحميل بيانات اللاعب
 // ------------------------------
 function loadGameData() {
-  document.getElementById("player-name").innerText = playerData.name;
+  document.getElementById("current-player").innerText = playerData.name;
   document.getElementById("gold").innerText = playerData.gold;
   document.getElementById("market-level").innerText = playerData.marketLevel;
-  // ... الخ (أضف ما تحتاجه هنا لعرض باقي البيانات)
+  // أضف بقية البيانات عند الحاجة
 }
 
 // ------------------------------
@@ -183,6 +181,6 @@ function logout() {
 // ------------------------------
 document.getElementById("register-btn").addEventListener("click", register);
 document.getElementById("login-btn").addEventListener("click", login);
-document.getElementById("show-register").addEventListener("click", showRegister);
-document.getElementById("show-login").addEventListener("click", showLogin);
+document.getElementById("show-register-btn").addEventListener("click", showRegister);
+document.getElementById("show-login-btn").addEventListener("click", showLogin);
 document.getElementById("logout-btn").addEventListener("click", logout);
