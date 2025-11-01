@@ -21,12 +21,10 @@ let gameInterval = null;
 let isOnline = true;
 let lastOnlineTime = Date.now();
 
-// الأوقات الأساسية (بالثواني)
 const BASE_FARM_TIME = 300;
 const BASE_MINE_TIME = 300;
 const BASE_QUARRY_TIME = 240;
 
-// نظام المستويات - 20 مستوى لكل مبنى
 const LEVEL_CONFIG = {
   farm: [
     { level: 1, production: 10, time: 300, cost: 0 },
@@ -96,7 +94,6 @@ const LEVEL_CONFIG = {
   ]
 };
 
-// المباني الجديدة
 const BUILDINGS = {
   factory: [
     { level: 1, cost: 500, ironReq: 10, stoneReq: 10, produces: 5 },
@@ -132,19 +129,15 @@ const BUILDINGS = {
   ]
 };
 
-// تسجيل الأحداث
 document.getElementById("login-btn").addEventListener("click", login);
 document.getElementById("register-btn").addEventListener("click", register);
 document.getElementById("show-register-btn").addEventListener("click", showRegister);
 document.getElementById("show-login-btn").addEventListener("click", showLogin);
 document.getElementById("logout-btn").addEventListener("click", logout);
 
-// تتبع حالة اللاعب (Online/Offline)
 window.addEventListener('focus', () => {
   isOnline = true;
-  if (currentPlayer) {
-    calculateOfflineProgress();
-  }
+  if (currentPlayer) calculateOfflineProgress();
 });
 
 window.addEventListener('blur', () => {
@@ -152,24 +145,19 @@ window.addEventListener('blur', () => {
   lastOnlineTime = Date.now();
 });
 
-// حساب التقدم أثناء الأوفلاين
 function calculateOfflineProgress() {
   if (!currentPlayer) return;
-  
   const now = Date.now();
   const lastLogin = new Date(currentPlayer.lastLogin).getTime();
   const offlineTime = Math.floor((now - lastLogin) / 1000);
-  
   if (offlineTime < 10) return;
   
   const farmConfig = LEVEL_CONFIG.farm[currentPlayer.farmLevel - 1];
   const mineConfig = LEVEL_CONFIG.mine[currentPlayer.mineLevel - 1];
   const quarryConfig = LEVEL_CONFIG.quarry[currentPlayer.quarryLevel - 1];
-  
   const farmCycles = Math.floor(offlineTime / farmConfig.time);
   const mineCycles = Math.floor(offlineTime / mineConfig.time);
   const quarryCycles = Math.floor(offlineTime / quarryConfig.time);
-  
   const offlineRate = 0.65;
   const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
   
@@ -183,7 +171,6 @@ function calculateOfflineProgress() {
   currentPlayer.crops += foodGained;
   currentPlayer.minedIron += ironGained;
   currentPlayer.minedStone += stoneGained;
-  
   currentPlayer.farmTimer = farmConfig.time - (offlineTime % farmConfig.time);
   currentPlayer.mineTimer = mineConfig.time - (offlineTime % mineConfig.time);
   currentPlayer.quarryTimer = quarryConfig.time - (offlineTime % quarryConfig.time);
@@ -191,23 +178,19 @@ function calculateOfflineProgress() {
   if (foodGained > 0 || ironGained > 0 || stoneGained > 0) {
     alert(`📦 إنتاج أثناء غيابك (65%):\n🌾 ${foodGained} غذاء\n⛏️ ${ironGained} حديد\n🪨 ${stoneGained} حجر`);
   }
-  
   updateDisplay();
   savePlayerData();
 }
 
-// إنشاء حساب جديد
 function register() {
   const username = document.getElementById('new-username').value.trim();
   const password = document.getElementById('new-password').value;
   const msg = document.getElementById('register-message');
-
   if (!username || !password) {
     msg.innerHTML = "❌ الرجاء إدخال جميع الحقول";
     msg.style.color = "#e74c3c";
     return;
   }
-
   const playerRef = ref(db, 'players/' + username);
   get(playerRef).then(snapshot => {
     if (snapshot.exists()) {
@@ -252,17 +235,15 @@ function register() {
       });
     }
   }).catch(error => {
-    msg.innerHTML = "❌ خطأ في الاتصال: " + error.message;
+    msg.innerHTML = "❌ خطأ: " + error.message;
     msg.style.color = "#e74c3c";
   });
 }
 
-// تسجيل الدخول
 function login() {
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
   const msg = document.getElementById('login-message');
-
   const playerRef = ref(db, 'players/' + username);
   get(playerRef).then(snapshot => {
     if (snapshot.exists()) {
@@ -271,11 +252,9 @@ function login() {
         currentPlayer = player.playerData;
         lastOnlineTime = Date.now();
         isOnline = true;
-        
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'block';
         document.getElementById('current-player').textContent = currentPlayer.name;
-        
         calculateOfflineProgress();
         startGameLoop();
         loadLeaderboard();
@@ -289,12 +268,11 @@ function login() {
       msg.style.color = "#e74c3c";
     }
   }).catch(error => {
-    msg.innerHTML = "❌ خطأ في الاتصال: " + error.message;
+    msg.innerHTML = "❌ خطأ: " + error.message;
     msg.style.color = "#e74c3c";
   });
 }
 
-// عرض وإخفاء النماذج
 function showRegister() {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('register-form').style.display = 'block';
@@ -310,57 +288,45 @@ function logout() {
     currentPlayer.lastLogin = new Date().toISOString();
     savePlayerData();
   }
-  
   if (gameInterval) clearInterval(gameInterval);
   currentPlayer = null;
   isOnline = false;
-  
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   showLogin();
 }
 
-// حلقة اللعبة الرئيسية
 function startGameLoop() {
   if (gameInterval) clearInterval(gameInterval);
-  
   gameInterval = setInterval(() => {
     if (!currentPlayer) return;
-    
     const productionRate = isOnline ? 1 : 0.65;
-    
     currentPlayer.farmTimer--;
     currentPlayer.mineTimer--;
     currentPlayer.quarryTimer--;
     
-    // المزرعة
     if (currentPlayer.farmTimer <= 0) {
       const farmConfig = LEVEL_CONFIG.farm[currentPlayer.farmLevel - 1];
       const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
       const production = Math.floor(farmConfig.production * villageBonus * productionRate);
-      
       currentPlayer.food += production;
       currentPlayer.crops += production;
       currentPlayer.score += production;
       currentPlayer.farmTimer = farmConfig.time;
     }
     
-    // المنجم
     if (currentPlayer.mineTimer <= 0) {
       const mineConfig = LEVEL_CONFIG.mine[currentPlayer.mineLevel - 1];
       const production = Math.floor(mineConfig.production * productionRate);
-      
       currentPlayer.iron += production;
       currentPlayer.minedIron += production;
       currentPlayer.score += production;
       currentPlayer.mineTimer = mineConfig.time;
     }
     
-    // المحجر
     if (currentPlayer.quarryTimer <= 0) {
       const quarryConfig = LEVEL_CONFIG.quarry[currentPlayer.quarryLevel - 1];
       const production = Math.floor(quarryConfig.production * productionRate);
-      
       currentPlayer.stone += production;
       currentPlayer.minedStone += production;
       currentPlayer.score += production;
@@ -368,9 +334,7 @@ function startGameLoop() {
     }
     
     currentPlayer.level = Math.floor(currentPlayer.score / 1000) + 1;
-    
     updateDisplay();
-    
     if (Date.now() - lastOnlineTime > 60000) {
       lastOnlineTime = Date.now();
       savePlayerData();
@@ -378,47 +342,34 @@ function startGameLoop() {
   }, 1000);
 }
 
-// حفظ بيانات اللاعب
 function savePlayerData() {
   if (!currentPlayer) return;
   const playerRef = ref(db, 'players/' + currentPlayer.name + '/playerData');
   update(playerRef, currentPlayer);
 }
 
-// تحميل لوحة المتصدرين
 function loadLeaderboard() {
   const playersRef = ref(db, 'players');
   onValue(playersRef, (snapshot) => {
     const players = [];
     snapshot.forEach((childSnapshot) => {
       const data = childSnapshot.val();
-      if (data.playerData) {
-        players.push(data.playerData);
-      }
+      if (data.playerData) players.push(data.playerData);
     });
-    
     players.sort((a, b) => b.score - a.score);
-    
     const leaderboardEl = document.getElementById('players-list');
     leaderboardEl.innerHTML = '';
-    
     players.slice(0, 10).forEach((player, index) => {
       const div = document.createElement('div');
       div.className = 'leaderboard-item' + (player.name === currentPlayer.name ? ' current-player' : '');
-      div.innerHTML = `
-        <span class="rank">#${index + 1}</span>
-        <span class="name">${player.name}</span>
-        <span class="score">${Math.floor(player.score)} نقطة</span>
-      `;
+      div.innerHTML = `<span class="rank">#${index + 1}</span><span class="name">${player.name}</span><span class="score">${Math.floor(player.score)} نقطة</span>`;
       leaderboardEl.appendChild(div);
     });
   });
 }
 
-// تحديث العرض
 function updateDisplay() {
   if (!currentPlayer) return;
-  
   document.getElementById('gold').textContent = Math.floor(currentPlayer.gold);
   document.getElementById('food').textContent = Math.floor(currentPlayer.food);
   document.getElementById('iron').textContent = Math.floor(currentPlayer.iron);
@@ -427,7 +378,6 @@ function updateDisplay() {
   document.getElementById('level').textContent = currentPlayer.level;
   document.getElementById('score').textContent = Math.floor(currentPlayer.score);
   
-  // المزرعة
   const farmConfig = LEVEL_CONFIG.farm[currentPlayer.farmLevel - 1];
   const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
   document.getElementById('farm-level').textContent = currentPlayer.farmLevel;
@@ -435,31 +385,23 @@ function updateDisplay() {
   document.getElementById('crops').textContent = Math.floor(currentPlayer.crops);
   document.getElementById('farm-timer').textContent = formatTime(currentPlayer.farmTimer);
   document.getElementById('farm-progress').style.width = ((farmConfig.time - currentPlayer.farmTimer) / farmConfig.time * 100) + '%';
+  document.getElementById('farm-cost').textContent = currentPlayer.farmLevel < 20 ? LEVEL_CONFIG.farm[currentPlayer.farmLevel].cost : '—';
   
-  const nextFarmCost = currentPlayer.farmLevel < 20 ? LEVEL_CONFIG.farm[currentPlayer.farmLevel].cost : '—';
-  document.getElementById('farm-cost').textContent = nextFarmCost;
-  
-  // المنجم
   const mineConfig = LEVEL_CONFIG.mine[currentPlayer.mineLevel - 1];
   document.getElementById('mine-level').textContent = currentPlayer.mineLevel;
   document.getElementById('mine-production').textContent = mineConfig.production;
   document.getElementById('mined-iron').textContent = Math.floor(currentPlayer.minedIron);
   document.getElementById('mine-timer').textContent = formatTime(currentPlayer.mineTimer);
   document.getElementById('mine-progress').style.width = ((mineConfig.time - currentPlayer.mineTimer) / mineConfig.time * 100) + '%';
+  document.getElementById('mine-cost').textContent = currentPlayer.mineLevel < 20 ? LEVEL_CONFIG.mine[currentPlayer.mineLevel].cost : '—';
   
-  const nextMineCost = currentPlayer.mineLevel < 20 ? LEVEL_CONFIG.mine[currentPlayer.mineLevel].cost : '—';
-  document.getElementById('mine-cost').textContent = nextMineCost;
-  
-  // المحجر
   const quarryConfig = LEVEL_CONFIG.quarry[currentPlayer.quarryLevel - 1];
   document.getElementById('quarry-level').textContent = currentPlayer.quarryLevel;
   document.getElementById('quarry-production').textContent = quarryConfig.production;
   document.getElementById('mined-stone').textContent = Math.floor(currentPlayer.minedStone);
   document.getElementById('quarry-timer').textContent = formatTime(currentPlayer.quarryTimer);
   document.getElementById('quarry-progress').style.width = ((quarryConfig.time - currentPlayer.quarryTimer) / quarryConfig.time * 100) + '%';
-  
-  const nextQuarryCost = currentPlayer.quarryLevel < 20 ? LEVEL_CONFIG.quarry[currentPlayer.quarryLevel].cost : '—';
-  document.getElementById('quarry-cost').textContent = nextQuarryCost;
+  document.getElementById('quarry-cost').textContent = currentPlayer.quarryLevel < 20 ? LEVEL_CONFIG.quarry[currentPlayer.quarryLevel].cost : '—';
   
   updateFactoryDisplay();
   updateVillageDisplay();
@@ -467,13 +409,11 @@ function updateDisplay() {
   updateMarketDisplay();
 }
 
-// تحديث عرض المصنع
 function updateFactoryDisplay() {
   const factoryEl = document.getElementById('factory-level');
   const statusEl = document.getElementById('factory-status');
   const produceBtn = document.getElementById('produce-building');
   const upgradeBtn = document.getElementById('upgrade-factory');
-  
   if (currentPlayer.factoryLevel === 0) {
     factoryEl.textContent = '—';
     statusEl.textContent = 'غير مبني';
@@ -484,7 +424,6 @@ function updateFactoryDisplay() {
     factoryEl.textContent = currentPlayer.factoryLevel;
     statusEl.textContent = `يحول ${factory.ironReq} حديد + ${factory.stoneReq} حجر → ${factory.produces} مواد بناء`;
     produceBtn.disabled = false;
-    
     if (currentPlayer.factoryLevel < 6) {
       const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel];
       upgradeBtn.textContent = `تطوير المصنع (تكلفة: ${nextFactory.cost} ذهب)`;
@@ -496,12 +435,10 @@ function updateFactoryDisplay() {
   }
 }
 
-// تحديث عرض القرية
 function updateVillageDisplay() {
   const villageEl = document.getElementById('village-level');
   const bonusEl = document.getElementById('village-bonus');
   const upgradeBtn = document.getElementById('upgrade-village');
-  
   if (currentPlayer.villageLevel === 0) {
     villageEl.textContent = '—';
     bonusEl.textContent = '+0%';
@@ -511,7 +448,6 @@ function updateVillageDisplay() {
     const village = BUILDINGS.village[currentPlayer.villageLevel - 1];
     villageEl.textContent = currentPlayer.villageLevel;
     bonusEl.textContent = `+${Math.floor((village.bonus - 1) * 100)}%`;
-    
     if (currentPlayer.villageLevel < 6) {
       const nextVillage = BUILDINGS.village[currentPlayer.villageLevel];
       upgradeBtn.textContent = `تطوير القرية (${nextVillage.goldCost} ذهب + ${nextVillage.buildMatCost} مواد + ${nextVillage.foodReq} غذاء)`;
@@ -523,12 +459,10 @@ function updateVillageDisplay() {
   }
 }
 
-// تحديث عرض الجيش
 function updateArmyDisplay() {
   const armyEl = document.getElementById('army-level');
   const pointsEl = document.getElementById('army-points');
   const upgradeBtn = document.getElementById('upgrade-army');
-  
   if (currentPlayer.armyLevel === 0) {
     armyEl.textContent = '—';
     pointsEl.textContent = '0';
@@ -538,7 +472,6 @@ function updateArmyDisplay() {
     const army = BUILDINGS.army[currentPlayer.armyLevel - 1];
     armyEl.textContent = currentPlayer.armyLevel;
     pointsEl.textContent = army.points;
-    
     if (currentPlayer.armyLevel < 6) {
       const nextArmy = BUILDINGS.army[currentPlayer.armyLevel];
       upgradeBtn.textContent = `تطوير الجيش (${nextArmy.goldCost} ذهب + ${nextArmy.ironReq} حديد + ${nextArmy.foodReq} غذاء)`;
@@ -550,11 +483,52 @@ function updateArmyDisplay() {
   }
 }
 
-// تحديث عرض السوق
 function updateMarketDisplay() {
   const marketEl = document.getElementById('market-level');
   const rateEl = document.getElementById('market-rate');
   const upgradeBtn = document.getElementById('upgrade-market');
-  
   const market = BUILDINGS.market[currentPlayer.marketLevel - 1];
-  marketEl.
+  marketEl.textContent = currentPlayer.marketLevel;
+  rateEl.textContent = market.sellRate;
+  if (currentPlayer.marketLevel < 6) {
+    const nextMarket = BUILDINGS.market[currentPlayer.marketLevel];
+    upgradeBtn.textContent = `تطوير السوق (تكلفة: ${nextMarket.cost} ذهب)`;
+    upgradeBtn.disabled = false;
+  } else {
+    upgradeBtn.textContent = 'المستوى الأقصى';
+    upgradeBtn.disabled = true;
+  }
+}
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+window.upgradeFarm = function() {
+  if (currentPlayer.farmLevel >= 20) {
+    alert('⚠️ وصلت للمستوى الأقصى!');
+    return;
+  }
+  const nextLevel = LEVEL_CONFIG.farm[currentPlayer.farmLevel];
+  if (currentPlayer.gold >= nextLevel.cost) {
+    currentPlayer.gold -= nextLevel.cost;
+    currentPlayer.farmLevel++;
+    currentPlayer.farmTimer = nextLevel.time;
+    updateDisplay();
+    savePlayerData();
+    alert('✅ تم تطوير المزرعة!');
+  } else {
+    alert('❌ ذهب غير كافٍ!');
+  }
+}
+
+window.upgradeMine = function() {
+  if (currentPlayer.mineLevel >= 20) {
+    alert('⚠️ وصلت للمستوى الأقصى!');
+    return;
+  }
+  const nextLevel = LEVEL_CONFIG.mine[currentPlayer.mineLevel];
+  if (currentPlayer.gold >= nextLevel.cost) {
+    currentPlayer.gol
