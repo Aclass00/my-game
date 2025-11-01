@@ -79,6 +79,12 @@ button:active {
     transform: translateY(0);
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 #login-message, #register-message {
     margin-top: 20px;
     padding: 10px;
@@ -249,7 +255,45 @@ button:active {
 }
 
 .progress-fill.gold {
-    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    background: linear-gradient(135deg, #9e9e9e, #bdbdbd);
+}
+
+/* ستايلات خاصة بالمباني الجديدة */
+.factory-section {
+    border-right: 4px solid #ff5722;
+}
+
+.factory-section h3 {
+    color: #ff5722;
+}
+
+.village-section {
+    border-right: 4px solid #4caf50;
+}
+
+.village-section h3 {
+    color: #4caf50;
+}
+
+.army-section {
+    border-right: 4px solid #f44336;
+}
+
+.army-section h3 {
+    color: #f44336;
+}
+
+.market-section {
+    border-right: 4px solid #2196f3;
+}
+
+.market-section h3 {
+    color: #2196f3;
+}
+
+.section button {
+    width: 100%;
+    margin: 5px 0;
 }
 
 @keyframes slideInRight {
