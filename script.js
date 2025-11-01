@@ -26,109 +26,112 @@ const BASE_FARM_TIME = 300;
 const BASE_MINE_TIME = 300;
 const BASE_QUARRY_TIME = 240;
 
-// نظام المستويات - 20 مستوى لكل مبنى
+// نظام المستويات - 20 مستوى لكل مبنى (متوازن لـ 20 يوم)
 const LEVEL_CONFIG = {
   farm: [
     { level: 1, production: 10, time: 300, cost: 0 },
-    { level: 2, production: 20, time: 300, cost: 50 },
-    { level: 3, production: 35, time: 285, cost: 100 },
-    { level: 4, production: 50, time: 285, cost: 200 },
-    { level: 5, production: 75, time: 270, cost: 400 },
-    { level: 6, production: 100, time: 270, cost: 700 },
-    { level: 7, production: 140, time: 255, cost: 1200 },
-    { level: 8, production: 180, time: 255, cost: 2000 },
-    { level: 9, production: 240, time: 240, cost: 3500 },
-    { level: 10, production: 300, time: 240, cost: 6000 },
-    { level: 11, production: 400, time: 225, cost: 10000 },
-    { level: 12, production: 500, time: 225, cost: 16000 },
-    { level: 13, production: 650, time: 210, cost: 25000 },
-    { level: 14, production: 800, time: 210, cost: 40000 },
-    { level: 15, production: 1000, time: 195, cost: 65000 },
-    { level: 16, production: 1300, time: 195, cost: 100000 },
-    { level: 17, production: 1600, time: 180, cost: 150000 },
-    { level: 18, production: 2000, time: 180, cost: 230000 },
-    { level: 19, production: 2500, time: 165, cost: 350000 },
-    { level: 20, production: 3500, time: 150, cost: 500000 }
+    { level: 2, production: 22, time: 300, cost: 80 },
+    { level: 3, production: 38, time: 290, cost: 180 },
+    { level: 4, production: 58, time: 280, cost: 350 },
+    { level: 5, production: 82, time: 270, cost: 650 },
+    { level: 6, production: 110, time: 260, cost: 1100 },
+    { level: 7, production: 142, time: 250, cost: 1800 },
+    { level: 8, production: 178, time: 240, cost: 2800 },
+    { level: 9, production: 218, time: 230, cost: 4200 },
+    { level: 10, production: 262, time: 220, cost: 6200 },
+    { level: 11, production: 310, time: 210, cost: 9000 },
+    { level: 12, production: 362, time: 200, cost: 12500 },
+    { level: 13, production: 418, time: 190, cost: 17000 },
+    { level: 14, production: 478, time: 180, cost: 23000 },
+    { level: 15, production: 542, time: 170, cost: 31000 },
+    { level: 16, production: 610, time: 160, cost: 42000 },
+    { level: 17, production: 682, time: 150, cost: 56000 },
+    { level: 18, production: 758, time: 150, cost: 74000 },
+    { level: 19, production: 838, time: 150, cost: 96000 },
+    { level: 20, production: 950, time: 150, cost: 125000 }
   ],
   mine: [
     { level: 1, production: 8, time: 300, cost: 0 },
-    { level: 2, production: 16, time: 300, cost: 50 },
-    { level: 3, production: 28, time: 285, cost: 100 },
-    { level: 4, production: 40, time: 285, cost: 200 },
-    { level: 5, production: 60, time: 270, cost: 400 },
-    { level: 6, production: 80, time: 270, cost: 700 },
-    { level: 7, production: 110, time: 255, cost: 1200 },
-    { level: 8, production: 145, time: 255, cost: 2000 },
-    { level: 9, production: 190, time: 240, cost: 3500 },
-    { level: 10, production: 240, time: 240, cost: 6000 },
-    { level: 11, production: 320, time: 225, cost: 10000 },
-    { level: 12, production: 400, time: 225, cost: 16000 },
-    { level: 13, production: 520, time: 210, cost: 25000 },
-    { level: 14, production: 650, time: 210, cost: 40000 },
-    { level: 15, production: 800, time: 195, cost: 65000 },
-    { level: 16, production: 1050, time: 195, cost: 100000 },
-    { level: 17, production: 1300, time: 180, cost: 150000 },
-    { level: 18, production: 1600, time: 180, cost: 230000 },
-    { level: 19, production: 2000, time: 165, cost: 350000 },
-    { level: 20, production: 2800, time: 150, cost: 500000 }
+    { level: 2, production: 18, time: 300, cost: 80 },
+    { level: 3, production: 30, time: 290, cost: 180 },
+    { level: 4, production: 46, time: 280, cost: 350 },
+    { level: 5, production: 66, time: 270, cost: 650 },
+    { level: 6, production: 88, time: 260, cost: 1100 },
+    { level: 7, production: 114, time: 250, cost: 1800 },
+    { level: 8, production: 142, time: 240, cost: 2800 },
+    { level: 9, production: 174, time: 230, cost: 4200 },
+    { level: 10, production: 210, time: 220, cost: 6200 },
+    { level: 11, production: 248, time: 210, cost: 9000 },
+    { level: 12, production: 290, time: 200, cost: 12500 },
+    { level: 13, production: 334, time: 190, cost: 17000 },
+    { level: 14, production: 382, time: 180, cost: 23000 },
+    { level: 15, production: 434, time: 170, cost: 31000 },
+    { level: 16, production: 488, time: 160, cost: 42000 },
+    { level: 17, production: 546, time: 150, cost: 56000 },
+    { level: 18, production: 606, time: 150, cost: 74000 },
+    { level: 19, production: 670, time: 150, cost: 96000 },
+    { level: 20, production: 760, time: 150, cost: 125000 }
   ],
   quarry: [
     { level: 1, production: 5, time: 240, cost: 0 },
-    { level: 2, production: 10, time: 240, cost: 30 },
-    { level: 3, production: 18, time: 230, cost: 60 },
-    { level: 4, production: 25, time: 230, cost: 120 },
-    { level: 5, production: 38, time: 220, cost: 250 },
-    { level: 6, production: 50, time: 220, cost: 450 },
-    { level: 7, production: 70, time: 210, cost: 800 },
-    { level: 8, production: 90, time: 210, cost: 1400 },
-    { level: 9, production: 120, time: 200, cost: 2500 },
-    { level: 10, production: 150, time: 200, cost: 4200 },
-    { level: 11, production: 200, time: 190, cost: 7000 },
-    { level: 12, production: 250, time: 190, cost: 11000 },
-    { level: 13, production: 330, time: 180, cost: 18000 },
-    { level: 14, production: 410, time: 180, cost: 28000 },
-    { level: 15, production: 500, time: 170, cost: 45000 },
-    { level: 16, production: 650, time: 170, cost: 70000 },
-    { level: 17, production: 800, time: 160, cost: 105000 },
-    { level: 18, production: 1000, time: 160, cost: 160000 },
-    { level: 19, production: 1250, time: 150, cost: 245000 },
-    { level: 20, production: 1750, time: 140, cost: 350000 }
+    { level: 2, production: 11, time: 240, cost: 60 },
+    { level: 3, production: 19, time: 235, cost: 140 },
+    { level: 4, production: 29, time: 230, cost: 270 },
+    { level: 5, production: 41, time: 225, cost: 500 },
+    { level: 6, production: 55, time: 220, cost: 850 },
+    { level: 7, production: 71, time: 215, cost: 1400 },
+    { level: 8, production: 89, time: 210, cost: 2200 },
+    { level: 9, production: 109, time: 205, cost: 3300 },
+    { level: 10, production: 131, time: 200, cost: 4900 },
+    { level: 11, production: 155, time: 195, cost: 7100 },
+    { level: 12, production: 181, time: 190, cost: 9900 },
+    { level: 13, production: 209, time: 185, cost: 13500 },
+    { level: 14, production: 239, time: 180, cost: 18200 },
+    { level: 15, production: 271, time: 175, cost: 24500 },
+    { level: 16, production: 305, time: 170, cost: 33200 },
+    { level: 17, production: 341, time: 165, cost: 44300 },
+    { level: 18, production: 379, time: 160, cost: 58500 },
+    { level: 19, production: 419, time: 160, cost: 76000 },
+    { level: 20, production: 475, time: 160, cost: 99000 }
   ]
 };
 
 // المباني الجديدة
 const BUILDINGS = {
   factory: [
-    { level: 1, cost: 500, ironReq: 10, stoneReq: 10, produces: 5 },
-    { level: 2, cost: 1000, ironReq: 20, stoneReq: 20, produces: 12 },
-    { level: 3, cost: 2500, ironReq: 40, stoneReq: 40, produces: 25 },
-    { level: 4, cost: 6000, ironReq: 80, stoneReq: 80, produces: 55 },
-    { level: 5, cost: 15000, ironReq: 150, stoneReq: 150, produces: 120 },
-    { level: 6, cost: 35000, ironReq: 300, stoneReq: 300, produces: 250 }
+    { level: 0, unlockCost: 200, cost: 0, ironReq: 0, stoneReq: 0, produces: 0 }, // مقفل
+    { level: 1, cost: 0, ironReq: 10, stoneReq: 10, produces: 5 },
+    { level: 2, cost: 500, ironReq: 20, stoneReq: 20, produces: 12 },
+    { level: 3, cost: 1500, ironReq: 40, stoneReq: 40, produces: 25 },
+    { level: 4, cost: 4000, ironReq: 80, stoneReq: 80, produces: 55 },
+    { level: 5, cost: 10000, ironReq: 150, stoneReq: 150, produces: 120 },
+    { level: 6, cost: 25000, ironReq: 300, stoneReq: 300, produces: 250 }
   ],
   village: [
-    { level: 1, goldCost: 800, buildMatCost: 20, foodReq: 50, bonus: 1.1 },
-    { level: 2, goldCost: 2000, buildMatCost: 50, foodReq: 100, bonus: 1.25 },
-    { level: 3, goldCost: 5000, buildMatCost: 120, foodReq: 200, bonus: 1.4 },
-    { level: 4, goldCost: 12000, buildMatCost: 300, foodReq: 400, bonus: 1.6 },
-    { level: 5, goldCost: 30000, buildMatCost: 700, foodReq: 800, bonus: 1.85 },
-    { level: 6, goldCost: 70000, buildMatCost: 1500, foodReq: 1500, bonus: 2.2 }
+    { level: 0, unlockCost: 300, unlockFood: 30, unlockBuildMat: 15, goldCost: 0, buildMatCost: 0, foodReq: 0, bonus: 1 }, // مقفل
+    { level: 1, goldCost: 0, buildMatCost: 0, foodReq: 0, bonus: 1.15 },
+    { level: 2, goldCost: 800, buildMatCost: 50, foodReq: 100, bonus: 1.3 },
+    { level: 3, goldCost: 2500, buildMatCost: 120, foodReq: 200, bonus: 1.5 },
+    { level: 4, goldCost: 7000, buildMatCost: 300, foodReq: 400, bonus: 1.75 },
+    { level: 5, goldCost: 18000, buildMatCost: 700, foodReq: 800, bonus: 2.0 },
+    { level: 6, goldCost: 45000, buildMatCost: 1500, foodReq: 1500, bonus: 2.5 }
   ],
   army: [
-    { level: 1, goldCost: 1200, ironReq: 30, foodReq: 30, points: 100 },
-    { level: 2, goldCost: 3000, ironReq: 70, foodReq: 70, points: 250 },
-    { level: 3, goldCost: 7500, ironReq: 150, foodReq: 150, points: 600 },
-    { level: 4, goldCost: 18000, ironReq: 350, foodReq: 350, points: 1500 },
-    { level: 5, goldCost: 45000, ironReq: 800, foodReq: 800, points: 3500 },
-    { level: 6, goldCost: 100000, ironReq: 1800, foodReq: 1800, points: 8000 }
+    { level: 0, unlockCost: 400, unlockIron: 20, unlockFood: 20, goldCost: 0, ironReq: 0, foodReq: 0, points: 0 }, // مقفل
+    { level: 1, goldCost: 0, ironReq: 0, foodReq: 0, points: 100 },
+    { level: 2, goldCost: 1200, ironReq: 70, foodReq: 70, points: 250 },
+    { level: 3, goldCost: 3500, ironReq: 150, foodReq: 150, points: 600 },
+    { level: 4, goldCost: 10000, ironReq: 350, foodReq: 350, points: 1500 },
+    { level: 5, goldCost: 25000, ironReq: 800, foodReq: 800, points: 3500 },
+    { level: 6, goldCost: 60000, ironReq: 1800, foodReq: 1800, points: 8000 }
   ],
   market: [
-    { level: 1, cost: 0, sellRate: 0.5 },
-    { level: 2, cost: 800, sellRate: 0.7 },
-    { level: 3, cost: 2000, sellRate: 0.9 },
-    { level: 4, cost: 5000, sellRate: 1.2 },
-    { level: 5, cost: 12000, sellRate: 1.5 },
-    { level: 6, cost: 30000, sellRate: 2.0 }
+    { level: 1, cost: 0, foodRate: 0.5, ironRate: 1.2, stoneRate: 0.9, buildMatRate: 4.0 },
+    { level: 2, cost: 800, foodRate: 0.7, ironRate: 1.5, stoneRate: 1.1, buildMatRate: 5.0 },
+    { level: 3, cost: 2000, foodRate: 0.9, ironRate: 1.8, stoneRate: 1.3, buildMatRate: 6.0 },
+    { level: 4, cost: 5000, foodRate: 1.2, ironRate: 2.2, stoneRate: 1.6, buildMatRate: 7.5 },
+    { level: 5, cost: 12000, foodRate: 1.5, ironRate: 2.6, stoneRate: 2.0, buildMatRate: 9.0 },
+    { level: 6, cost: 30000, foodRate: 2.0, ironRate: 3.2, stoneRate: 2.5, buildMatRate: 12.0 }
   ]
 };
 
@@ -171,7 +174,7 @@ function calculateOfflineProgress() {
   const quarryCycles = Math.floor(offlineTime / quarryConfig.time);
   
   const offlineRate = 0.65;
-  const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
+  const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel].bonus : 1;
   
   const foodGained = Math.floor(farmCycles * farmConfig.production * villageBonus * offlineRate);
   const ironGained = Math.floor(mineCycles * mineConfig.production * offlineRate);
@@ -250,7 +253,7 @@ function register() {
         password: password,
         playerData: {
           name: username,
-          gold: 100,
+          gold: 500,
           food: 0,
           iron: 0,
           stone: 0,
@@ -397,7 +400,7 @@ function startGameLoop() {
     // المزرعة
     if (currentPlayer.farmTimer <= 0) {
       const farmConfig = LEVEL_CONFIG.farm[currentPlayer.farmLevel - 1];
-      const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
+      const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel].bonus : 1;
       const production = Math.floor(farmConfig.production * villageBonus * productionRate);
       
       currentPlayer.food += production;
@@ -453,7 +456,7 @@ function updateDisplay() {
   
   // المزرعة
   const farmConfig = LEVEL_CONFIG.farm[currentPlayer.farmLevel - 1];
-  const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel - 1].bonus : 1;
+  const villageBonus = currentPlayer.villageLevel > 0 ? BUILDINGS.village[currentPlayer.villageLevel].bonus : 1;
   document.getElementById('farm-level').textContent = currentPlayer.farmLevel;
   document.getElementById('farm-production').textContent = Math.floor(farmConfig.production * villageBonus);
   document.getElementById('crops').textContent = Math.floor(currentPlayer.crops);
@@ -499,19 +502,20 @@ function updateFactoryDisplay() {
   const upgradeBtn = document.getElementById('upgrade-factory');
   
   if (currentPlayer.factoryLevel === 0) {
-    factoryEl.textContent = '—';
-    statusEl.textContent = 'غير مبني';
+    factoryEl.textContent = 'مقفل 🔒';
+    statusEl.textContent = 'غير مفتوح';
     produceBtn.disabled = true;
-    upgradeBtn.textContent = `بناء المصنع (تكلفة: ${BUILDINGS.factory[0].cost} ذهب)`;
+    upgradeBtn.textContent = `فتح المصنع (${BUILDINGS.factory[0].unlockCost} ذهب)`;
+    upgradeBtn.disabled = false;
   } else {
-    const factory = BUILDINGS.factory[currentPlayer.factoryLevel - 1];
+    const factory = BUILDINGS.factory[currentPlayer.factoryLevel];
     factoryEl.textContent = currentPlayer.factoryLevel;
     statusEl.textContent = `يحول ${factory.ironReq} حديد + ${factory.stoneReq} حجر → ${factory.produces} مواد بناء`;
     produceBtn.disabled = false;
     
     if (currentPlayer.factoryLevel < 6) {
-      const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel];
-      upgradeBtn.textContent = `تطوير المصنع (تكلفة: ${nextFactory.cost} ذهب)`;
+      const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel + 1];
+      upgradeBtn.textContent = `تطوير المصنع (${nextFactory.cost} ذهب)`;
       upgradeBtn.disabled = false;
     } else {
       upgradeBtn.textContent = 'المستوى الأقصى';
@@ -527,17 +531,18 @@ function updateVillageDisplay() {
   const upgradeBtn = document.getElementById('upgrade-village');
   
   if (currentPlayer.villageLevel === 0) {
-    villageEl.textContent = '—';
+    villageEl.textContent = 'مقفل 🔒';
     bonusEl.textContent = '+0%';
     const village = BUILDINGS.village[0];
-    upgradeBtn.textContent = `بناء القرية (${village.goldCost} ذهب + ${village.buildMatCost} مواد بناء + ${village.foodReq} غذاء)`;
+    upgradeBtn.textContent = `فتح القرية (${village.unlockCost} ذهب + ${village.unlockBuildMat} مواد + ${village.unlockFood} غذاء)`;
+    upgradeBtn.disabled = false;
   } else {
-    const village = BUILDINGS.village[currentPlayer.villageLevel - 1];
+    const village = BUILDINGS.village[currentPlayer.villageLevel];
     villageEl.textContent = currentPlayer.villageLevel;
     bonusEl.textContent = `+${Math.floor((village.bonus - 1) * 100)}%`;
     
     if (currentPlayer.villageLevel < 6) {
-      const nextVillage = BUILDINGS.village[currentPlayer.villageLevel];
+      const nextVillage = BUILDINGS.village[currentPlayer.villageLevel + 1];
       upgradeBtn.textContent = `تطوير القرية (${nextVillage.goldCost} ذهب + ${nextVillage.buildMatCost} مواد + ${nextVillage.foodReq} غذاء)`;
       upgradeBtn.disabled = false;
     } else {
@@ -554,17 +559,18 @@ function updateArmyDisplay() {
   const upgradeBtn = document.getElementById('upgrade-army');
   
   if (currentPlayer.armyLevel === 0) {
-    armyEl.textContent = '—';
+    armyEl.textContent = 'مقفل 🔒';
     pointsEl.textContent = '0';
     const army = BUILDINGS.army[0];
-    upgradeBtn.textContent = `بناء الجيش (${army.goldCost} ذهب + ${army.ironReq} حديد + ${army.foodReq} غذاء)`;
+    upgradeBtn.textContent = `فتح الجيش (${army.unlockCost} ذهب + ${army.unlockIron} حديد + ${army.unlockFood} غذاء)`;
+    upgradeBtn.disabled = false;
   } else {
-    const army = BUILDINGS.army[currentPlayer.armyLevel - 1];
+    const army = BUILDINGS.army[currentPlayer.armyLevel];
     armyEl.textContent = currentPlayer.armyLevel;
     pointsEl.textContent = army.points;
     
     if (currentPlayer.armyLevel < 6) {
-      const nextArmy = BUILDINGS.army[currentPlayer.armyLevel];
+      const nextArmy = BUILDINGS.army[currentPlayer.armyLevel + 1];
       upgradeBtn.textContent = `تطوير الجيش (${nextArmy.goldCost} ذهب + ${nextArmy.ironReq} حديد + ${nextArmy.foodReq} غذاء)`;
       upgradeBtn.disabled = false;
     } else {
@@ -669,11 +675,11 @@ window.upgradeQuarry = function() {
 // إنتاج مواد البناء في المصنع
 window.produceBuilding = function() {
   if (currentPlayer.factoryLevel === 0) {
-    alert('❌ يجب بناء المصنع أولاً!');
+    alert('❌ يجب فتح المصنع أولاً!');
     return;
   }
   
-  const factory = BUILDINGS.factory[currentPlayer.factoryLevel - 1];
+  const factory = BUILDINGS.factory[currentPlayer.factoryLevel];
   
   if (currentPlayer.iron >= factory.ironReq && currentPlayer.stone >= factory.stoneReq) {
     currentPlayer.iron -= factory.ironReq;
@@ -688,75 +694,120 @@ window.produceBuilding = function() {
   }
 }
 
-// بناء/تطوير المصنع
+// فتح/تطوير المصنع
 window.upgradeFactory = function() {
-  if (currentPlayer.factoryLevel >= 6) {
+  if (currentPlayer.factoryLevel === 0) {
+    // فتح المصنع
+    const unlock = BUILDINGS.factory[0];
+    if (currentPlayer.gold >= unlock.unlockCost) {
+      currentPlayer.gold -= unlock.unlockCost;
+      currentPlayer.factoryLevel = 1;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم فتح المصنع!');
+    } else {
+      alert(`❌ تحتاج إلى ${unlock.unlockCost} ذهب!`);
+    }
+  } else if (currentPlayer.factoryLevel >= 6) {
     alert('⚠️ وصلت للمستوى الأقصى!');
-    return;
-  }
-  
-  const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel];
-  
-  if (currentPlayer.gold >= nextFactory.cost) {
-    currentPlayer.gold -= nextFactory.cost;
-    currentPlayer.factoryLevel++;
-    updateDisplay();
-    savePlayerData();
-    alert(`✅ تم ${currentPlayer.factoryLevel === 1 ? 'بناء' : 'تطوير'} المصنع!`);
   } else {
-    alert('❌ ذهب غير كافٍ!');
+    // تطوير المصنع
+    const nextFactory = BUILDINGS.factory[currentPlayer.factoryLevel + 1];
+    if (currentPlayer.gold >= nextFactory.cost) {
+      currentPlayer.gold -= nextFactory.cost;
+      currentPlayer.factoryLevel++;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم تطوير المصنع!');
+    } else {
+      alert('❌ ذهب غير كافٍ!');
+    }
   }
 }
 
-// بناء/تطوير القرية
+// فتح/تطوير القرية
 window.upgradeVillage = function() {
-  if (currentPlayer.villageLevel >= 6) {
+  if (currentPlayer.villageLevel === 0) {
+    // فتح القرية
+    const unlock = BUILDINGS.village[0];
+    if (currentPlayer.gold >= unlock.unlockCost && 
+        currentPlayer.buildingMaterials >= unlock.unlockBuildMat && 
+        currentPlayer.food >= unlock.unlockFood) {
+      
+      currentPlayer.gold -= unlock.unlockCost;
+      currentPlayer.buildingMaterials -= unlock.unlockBuildMat;
+      currentPlayer.food -= unlock.unlockFood;
+      currentPlayer.villageLevel = 1;
+      currentPlayer.score += 500;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم فتح القرية! إنتاج المزرعة زاد بنسبة 15%!');
+    } else {
+      alert(`❌ تحتاج إلى ${unlock.unlockCost} ذهب + ${unlock.unlockBuildMat} مواد بناء + ${unlock.unlockFood} غذاء!`);
+    }
+  } else if (currentPlayer.villageLevel >= 6) {
     alert('⚠️ وصلت للمستوى الأقصى!');
-    return;
-  }
-  
-  const nextVillage = BUILDINGS.village[currentPlayer.villageLevel];
-  
-  if (currentPlayer.gold >= nextVillage.goldCost && 
-      currentPlayer.buildingMaterials >= nextVillage.buildMatCost && 
-      currentPlayer.food >= nextVillage.foodReq) {
-    
-    currentPlayer.gold -= nextVillage.goldCost;
-    currentPlayer.buildingMaterials -= nextVillage.buildMatCost;
-    currentPlayer.food -= nextVillage.foodReq;
-    currentPlayer.villageLevel++;
-    currentPlayer.score += 500;
-    updateDisplay();
-    savePlayerData();
-    alert(`✅ تم ${currentPlayer.villageLevel === 1 ? 'بناء' : 'تطوير'} القرية! إنتاج المزرعة زاد!`);
   } else {
-    alert(`❌ تحتاج إلى ${nextVillage.goldCost} ذهب + ${nextVillage.buildMatCost} مواد بناء + ${nextVillage.foodReq} غذاء!`);
+    // تطوير القرية
+    const nextVillage = BUILDINGS.village[currentPlayer.villageLevel + 1];
+    if (currentPlayer.gold >= nextVillage.goldCost && 
+        currentPlayer.buildingMaterials >= nextVillage.buildMatCost && 
+        currentPlayer.food >= nextVillage.foodReq) {
+      
+      currentPlayer.gold -= nextVillage.goldCost;
+      currentPlayer.buildingMaterials -= nextVillage.buildMatCost;
+      currentPlayer.food -= nextVillage.foodReq;
+      currentPlayer.villageLevel++;
+      currentPlayer.score += 500;
+      updateDisplay();
+      savePlayerData();
+      alert('✅ تم تطوير القرية! إنتاج المزرعة زاد!');
+    } else {
+      alert(`❌ تحتاج إلى ${nextVillage.goldCost} ذهب + ${nextVillage.buildMatCost} مواد بناء + ${nextVillage.foodReq} غذاء!`);
+    }
   }
 }
 
-// بناء/تطوير الجيش
+// فتح/تطوير الجيش
 window.upgradeArmy = function() {
-  if (currentPlayer.armyLevel >= 6) {
+  if (currentPlayer.armyLevel === 0) {
+    // فتح الجيش
+    const unlock = BUILDINGS.army[0];
+    if (currentPlayer.gold >= unlock.unlockCost && 
+        currentPlayer.iron >= unlock.unlockIron && 
+        currentPlayer.food >= unlock.unlockFood) {
+      
+      currentPlayer.gold -= unlock.unlockCost;
+      currentPlayer.iron -= unlock.unlockIron;
+      currentPlayer.food -= unlock.unlockFood;
+      currentPlayer.armyLevel = 1;
+      currentPlayer.score += BUILDINGS.army[1].points;
+      updateDisplay();
+      savePlayerData();
+      alert(`✅ تم فتح الجيش! حصلت على ${BUILDINGS.army[1].points} نقطة!`);
+    } else {
+      alert(`❌ تحتاج إلى ${unlock.unlockCost} ذهب + ${unlock.unlockIron} حديد + ${unlock.unlockFood} غذاء!`);
+    }
+  } else if (currentPlayer.armyLevel >= 6) {
     alert('⚠️ وصلت للمستوى الأقصى!');
-    return;
-  }
-  
-  const nextArmy = BUILDINGS.army[currentPlayer.armyLevel];
-  
-  if (currentPlayer.gold >= nextArmy.goldCost && 
-      currentPlayer.iron >= nextArmy.ironReq && 
-      currentPlayer.food >= nextArmy.foodReq) {
-    
-    currentPlayer.gold -= nextArmy.goldCost;
-    currentPlayer.iron -= nextArmy.ironReq;
-    currentPlayer.food -= nextArmy.foodReq;
-    currentPlayer.armyLevel++;
-    currentPlayer.score += nextArmy.points;
-    updateDisplay();
-    savePlayerData();
-    alert(`✅ تم ${currentPlayer.armyLevel === 1 ? 'بناء' : 'تطوير'} الجيش! حصلت على ${nextArmy.points} نقطة!`);
   } else {
-    alert(`❌ تحتاج إلى ${nextArmy.goldCost} ذهب + ${nextArmy.ironReq} حديد + ${nextArmy.foodReq} غذاء!`);
+    // تطوير الجيش
+    const nextArmy = BUILDINGS.army[currentPlayer.armyLevel + 1];
+    if (currentPlayer.gold >= nextArmy.goldCost && 
+        currentPlayer.iron >= nextArmy.ironReq && 
+        currentPlayer.food >= nextArmy.foodReq) {
+      
+      currentPlayer.gold -= nextArmy.goldCost;
+      currentPlayer.iron -= nextArmy.ironReq;
+      currentPlayer.food -= nextArmy.foodReq;
+      currentPlayer.armyLevel++;
+      currentPlayer.score += nextArmy.points;
+      updateDisplay();
+      savePlayerData();
+      alert(`✅ تم تطوير الجيش! حصلت على ${nextArmy.points} نقطة!`);
+    } else {
+      alert(`❌ تحتاج إلى ${nextArmy.goldCost} ذهب + ${nextArmy.ironReq} حديد + ${nextArmy.foodReq} غذاء!`);
+    }
   }
 }
 
