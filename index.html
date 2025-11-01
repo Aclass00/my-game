@@ -8,6 +8,7 @@
 </head>
 <body>
   <div id="login-screen">
+    <!-- نموذج تسجيل الدخول -->
     <div id="login-form">
       <h2>🎮 تسجيل الدخول</h2>
       <input type="text" id="username" placeholder="اسم اللاعب">
@@ -17,6 +18,7 @@
       <div id="login-message"></div>
     </div>
 
+    <!-- نموذج إنشاء الحساب -->
     <div id="register-form" style="display:none;">
       <h2>📝 إنشاء حساب جديد</h2>
       <input type="text" id="new-username" placeholder="اسم اللاعب الجديد">
@@ -32,12 +34,10 @@
       <span>مرحباً, <span id="current-player">...</span></span>
       <button id="logout-btn">تسجيل الخروج</button>
     </div>
-
     <div id="leaderboard">
       <h2>🏆 لوحة المتصدرين</h2>
       <div id="players-list"></div>
     </div>
-
     <div id="resources">
       <h3>💰 مواردك</h3>
       <div>ذهب: <span id="gold">100</span></div>
@@ -48,9 +48,19 @@
       <div>المستوى: <span id="level">1</span></div>
       <div>النقاط: <span id="score">0</span></div>
     </div>
-
     <div id="actions">
-      <!-- بقية الأقسام تبقى كما هي -->
+      <!-- أمثلة على بعض المباني -->
+      <div class="section">
+        <h3>🌱 المزرعة (المستوى <span id="farm-level">1</span>)</h3>
+        <div>إنتاج: <span id="farm-production">10</span> غذاء كل 5 دقائق</div>
+        <div>إجمالي المحصول: <span id="crops">0</span></div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="farm-progress" style="width: 0%">
+            <span id="farm-timer">5:00</span>
+          </div>
+        </div>
+        <button onclick="upgradeFarm()">تطوير المزرعة (تكلفة: <span id="farm-cost">50</span> ذهب)</button>
+      </div>
     </div>
   </div>
 
