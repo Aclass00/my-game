@@ -39,7 +39,7 @@ showLoginBtn.addEventListener("click", () => {
 });
 
 // ------------------------------
-// إنشاء حساب جديد
+// إنشاء حساب جديد (الإصدار الآمن)
 // ------------------------------
 registerBtn.addEventListener("click", async () => {
   const username = document.getElementById("new-username").value.trim();
@@ -61,10 +61,12 @@ registerBtn.addEventListener("click", async () => {
     return;
   }
 
-  // ✅ إنشاء حساب جديد مع سوق مستوى 1
-  const playerData = {
-    password: password,
-    playerData: {
+  try {
+    // 1️⃣ إنشاء الحساب بكلمة المرور فقط
+    await set(userRef, { password: password });
+
+    // 2️⃣ بعدها نضيف بيانات اللاعب
+    const playerData = {
       name: username,
       gold: 100,
       food: 0,
@@ -80,22 +82,27 @@ registerBtn.addEventListener("click", async () => {
       factoryLevel: 0,
       villageLevel: 0,
       armyLevel: 0,
-      marketLevel: 1, // ✅ يبدأ السوق من المستوى 1 مباشرة
+      marketLevel: 1, // ✅ السوق يبدأ من المستوى 1
       score: 0,
       level: 1,
       joinDate: new Date().toISOString(),
       lastLogin: new Date().toISOString()
-    }
-  };
+    };
 
-  await set(userRef, playerData);
+    await update(userRef, { playerData: playerData });
 
-  msg.textContent = "✅ تم إنشاء الحساب بنجاح!";
-  msg.style.color = "green";
-  setTimeout(() => {
-    registerForm.style.display = "none";
-    loginForm.style.display = "block";
-  }, 1500);
+    msg.textContent = "✅ تم إنشاء الحساب بنجاح!";
+    msg.style.color = "green";
+    setTimeout(() => {
+      registerForm.style.display = "none";
+      loginForm.style.display = "block";
+    }, 1500);
+
+  } catch (err) {
+    console.error("خطأ أثناء إنشاء الحساب:", err);
+    msg.textContent = "⚠️ حدث خطأ أثناء إنشاء الحساب، حاول لاحقًا";
+    msg.style.color = "red";
+  }
 });
 
 // ------------------------------
@@ -165,7 +172,7 @@ async function loadPlayerData() {
       document.getElementById("factory-level").textContent = data.factoryLevel || "—";
       document.getElementById("village-level").textContent = data.villageLevel || "—";
       document.getElementById("army-level").textContent = data.armyLevel || "—";
-      document.getElementById("market-level").textContent = data.marketLevel || 1; // ✅ ضمان السوق دائماً يبدأ من 1
+      document.getElementById("market-level").textContent = data.marketLevel || 1; // ✅ تأكيد السوق دائماً يبدأ من 1
     }
   });
 }
@@ -178,4 +185,3 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   document.getElementById("game-screen").style.display = "none";
   document.getElementById("login-screen").style.display = "flex";
 });
-
