@@ -188,12 +188,15 @@ function calculateOfflineProgress() {
   currentPlayer.mineTimer = mineConfig.time - (offlineTime % mineConfig.time);
   currentPlayer.quarryTimer = quarryConfig.time - (offlineTime % quarryConfig.time);
   
-  if (foodGained > 0 || ironGained > 0 || stoneGained > 0) {
-    alert(`📦 إنتاج أثناء غيابك (65%):\n🌾 ${foodGained} غذاء\n⛏️ ${ironGained} حديد\n🪨 ${stoneGained} حجر`);
-  }
-  
   updateDisplay();
   savePlayerData();
+  
+  // عرض رسالة الإنتاج بعد تحديث العرض
+  if (foodGained > 0 || ironGained > 0 || stoneGained > 0) {
+    setTimeout(() => {
+      alert(`📦 إنتاج أثناء غيابك (65%):\n🌾 ${foodGained} غذاء\n⛏️ ${ironGained} حديد\n🪨 ${stoneGained} حجر`);
+    }, 500);
+  }
 }
 
 // إنشاء حساب جديد
